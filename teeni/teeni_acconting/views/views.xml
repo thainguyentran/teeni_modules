@@ -1,0 +1,15 @@
+<odoo>
+  <data>
+    <record id="invoice_supplier_form_inherit_asim" model="ir.ui.view">
+        <field name="name">account.invoice.supplier.form.inherit</field>
+        <field name="model">account.invoice</field>
+       <field name="inherit_id" ref="account.invoice_supplier_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="/form/sheet/notebook/page[1]/group[1]/group[1]" position="after">
+                    <field name="base_currency_id" invisible="1" readonly="1"/>
+                    <field name="total_in_base_currency" readonly="1" force_save="1" widget="monetary" options="{'currency_field': 'base_currency_id'}"/>
+            </xpath>
+        </field>
+   </record>
+  </data>
+</odoo>

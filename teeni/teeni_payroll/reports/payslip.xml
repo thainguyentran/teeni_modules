@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="payslip_paper_format_portrait" model="report.paperformat">
+            <field name="name">Payment Voucher Paper Format Portrait</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">90.5</field>
+            <field name="margin_bottom">82</field>
+            <field name="margin_left">2</field>
+            <field name="margin_right">2</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">91</field>
+            <field name="dpi">90</field>
+        </record>
+    <report 
+        id="action_report_payslip" 
+        model="hr.payslip" 
+        string="Payslip (Preview)"
+        report_type="qweb-html"
+        name="teeni_payroll.payslip_print" 
+        file="teeni_payroll.payslip_print"
+        print_report_name="'Payslip - %s' % (object.employee_id.name)"
+        paperformat="payslip_paper_format_portrait"
+    />
+    <template id="payslip_print">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <t t-call="web.basic_layout">
+                    <div class="header">
+                        <table width="100%">
+                            <tr>
+                                <td style="text-align:center" colspan="2">
+                                    <div style="font-size:28px;font-weight:bold;">TEENI ENTERPRISE PTE LTD
+                                    </div>
+                                    <div t-if="doc.company_id.street"> <span t-field="doc.company_id.street"/></div>
+                                    <div t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/></div>
+                                    <div t-if="doc.company_id.country_id">
+                                        <span t-field="doc.company_id.country_id.name"/>
+                                        <span t-field="doc.company_id.zip"/>
+                                    </div>
+                                    <div t-if="doc.company_id.phone">
+                                        Tel : <span t-field="doc.company_id.phone"/>
+                                        Fax: 6841 6372
+                                    </div>
+                                    <div style="font-size:14px;">
+                                        CO REG NO: 199303608W GST REG NO: M2-0115362-0
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr style="margin-top:30px;">
+                                <td>
+                                    <div style="font-size:20px;">Strictly Private and Confidential
+                                    </div>
+                                    <div style="margin-top:20px;">To be opened by addressee only
+                                    </div>
+                                </td>
+                                <td>Date: <span t-field="doc.create_date" t-options='{"widget": "date"}'/>
+                                </td>
+                            </tr>
+                            <tr style="margin-top:30px;">
+                                <td>SALARY ADVICE FOR THE PERIOD OF <span t-field="doc.date_from"/>-<span t-field="doc.date_to"/>
+                                    <div>
+                                        Department: <span t-field="doc.employee_id.department_id.name"/>
+                                    </div>
+                                    <div>
+                                        Job Title: <span t-field="doc.employee_id.job_title"/>
+                                    </div>
+                                    <div>
+                                        Pay Basis:
+                                    </div>
+                                    <div>
+                                        Pay Period: <span t-field="doc.contract_id.schedule_pay"/>
+                                    </div>
+                                    <div>
+                                        Pay Mode: 
+                                    </div>
+                                </td>
+                                <td style="border: 2px solid">
+                                    <div>
+                                        Name <span t-field="doc.employee_id.name"/>
+                                    </div>
+                                    <div>
+                                        Address <span t-field="doc.employee_id.address_home_id"/>
+                                    </div>
+                                    <div>
+                                        Identification Number <span t-field="doc.employee_id.identification_id"/>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <t t-set="employer_cpf" t-value="0" />
+                    <t t-set="sdl" t-value="0" />
+                    <div class="page" style="margin-top:20px;">
+                        <t t-set="net" t-value="0" />
+                        
+                        <table width="100%">
+                            <tr>
+                                <td>
+                                    <table width="100%">
+                                        <tr>
+                                            <th style="border: 2px solid;font-weight:bold;">DESCRIPTION</th>
+                                            <!-- <td style="border: 2px solid">RATE</td> -->
+                                            <th style="border: 2px solid;font-weight:bold;">QTY</th>
+                                            <th style="border: 2px solid;font-weight:bold;">AMOUNT</th>
+                                        </tr>
+                                        <tr t-foreach="doc.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                            <td t-if="line.code!='NET' and line.code!='GROSS' and line.code!='CPFSDL'" style="border: 2px solid"><span t-field="line.name"/></td>
+                                            <td t-if="line.code=='GROSS'" style="border: 2px solid">Gross Income</td>
+                                            <!-- <td style="border: 2px solid"><span t-field="line.name"/></td> -->
+                                            <td t-if="line.code!='NET' and line.code!='CPFSDL'" style="border: 2px solid"><span t-field="line.quantity"/></td>
+                                            <td t-if="line.code!='NET' and line.code!='CPFSDL'" style="border: 2px solid"><span t-esc="line.amount"
+                                                      t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/></td>
+                                            <t t-if="line.code=='NET'">
+                                                <t t-set="net" t-value="line.amount" />
+                                            </t>
+                                            <t t-if="line.code=='CPFER_SPR_SIN'">
+                                                <t t-set="employer_cpf" t-value="line.amount" />
+                                            </t>
+                                            <t t-if="line.code=='CPFSDL'">
+                                                <t t-set="sdl" t-value="line.amount" />
+                                            </t>
+                                        </tr>
+                                        <tr>
+                                            <td style="text-align:right" colspan="2">Net Income </td>
+                                            <td style="border: 2px solid"><span t-esc="net" t-options='{"widget": "monetary", "display_currency": doc.company_id.currency_id}'/> 
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="footer" style="margin-top:20px;">
+                        <table width="100%" >
+                            <tr style="border: 2px solid">
+                                <td>
+                                    <div>EMPLOYER'S CPF CONTRIBUTION: <span t-esc="employer_cpf"/>
+                                    </div>
+                                    <div>YTD EMPLOYER CPF CONTRIBUTION: <span t-esc="doc.total_ytd_cpf_employer"/>
+                                    </div>
+                                    <div>YTD EMPLOYEE CPF CONTRIBUTION: <span t-esc="doc.total_ytd_cpf_employee"/>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div>SKILL DEVELOPMENT LEVY: <span t-esc="sdl"/>
+                                    </div>
+                                    <div>YTD BONUS: <span t-esc="doc.total_ytd_bonus"/>
+                                    </div>
+                                    <div>YTD SALARY: <span t-esc="doc.total_ytd_gross"/>
+                                    </div>
+                                </td>
+                            </tr>
+                      </table>
+                      <table style="margin-top:50px;">
+                        <tr>
+                                <td>
+                                    MESSAGE SYSTEM GENERATED PAYSLIP, NO SIGNATURE REQUIRED
+                                </td>
+                            </tr>
+                      </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>

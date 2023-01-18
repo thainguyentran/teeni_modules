@@ -1,0 +1,533 @@
+<odoo>
+    <data>
+        <record id="view_sup_detail_aging_report" model="ir.ui.view">
+            <field name="name">sup.detail.aging.report.wiz.form</field>
+            <field name="model">sup.detail.aging.report.wiz</field>
+            <field name="arch" type="xml">
+                <form string="Supplier Detail Aging Report" create="false" edit="false" save="false" discard="false">
+                    <group>
+                        <group>
+                            <field name="supplier_id" domain="[('supplier','=',True), ('parent_id', '=', False)]" options="{'no_create':true, 'no_create_edit':true}"/>
+                            <field name="aging_date" />
+                            <field name="currency_type" options="{'horizontal':true}" widget="radio"/>
+                        </group>
+                        <group>
+
+                        </group>
+                    </group>
+                    <footer>
+                        <!--            <button name="run_process" string="Process" type="object" class="btn-primary" />-->
+                        <button name="print_report" string="Print Preview" type="object" class="btn-primary" />
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <!--        <record id="sup_sum_aging_paperformat_landscape" model="report.paperformat">-->
+        <!--            <field name="name">Supplier Sum Aging Report Format Landscape</field>-->
+        <!--            <field name="default" eval="True" />-->
+        <!--            <field name="format">A4</field>-->
+        <!--            <field name="page_height">0</field>-->
+        <!--            <field name="page_width">0</field>-->
+        <!--            <field name="orientation">Landscape</field>-->
+        <!--            <field name="margin_top">5</field>-->
+        <!--            <field name="margin_bottom">5</field>-->
+        <!--            <field name="margin_left">7</field>-->
+        <!--            <field name="margin_right">7</field>-->
+        <!--            <field name="header_line" eval="False" />-->
+        <!--            <field name="header_spacing">25</field>-->
+        <!--            <field name="dpi">90</field>-->
+        <!--        </record>-->
+
+        <report
+            string="Supplier Detail Aging Report"
+            id="action_supplier_detail_aging_report"
+            model="sup.detail.aging.report.wiz"
+            report_type="qweb-html"
+            name="teeni_crm.supplier_detail_aging_report"
+            file="teeni_crm.supplier_detail_aging_report"
+            print_report_name="'Supplier Detail Aging Report'"
+            paperformat="sup_sum_aging_paperformat_landscape"
+        />
+
+        <template id="supplier_detail_aging_report">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.basic_layout">
+                        <t t-set="record_collection" t-value="o.run_process()" />
+                        <t t-set="FromSupplier" t-value=""/>
+                        <t t-set="ToSupplier" t-value=""/>
+                        <t t-set="count" t-value="-1"/>
+                        <t t-foreach="record_collection" t-as="line">
+                            <t t-set="count" t-value="count+1"/>
+                            <t t-if="count==1">
+                                <t t-set="FromSupplier" t-value="line.supplier"/>
+                            </t>
+                            <t t-if="count>=1">
+                                <t t-set="ToSupplier" t-value="line.supplier"/>
+                            </t>
+
+                        </t>
+                        <table>
+                            <tr>
+                                <td colspan="4" style="text-align:left;">
+                                    <h3>TEENI ENTERPRISE PTE LTD-09</h3>
+                                    <h3><u>Supplier Detail Aging Report</u></h3>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">Print Order: Supplier ID</td>
+
+                                <td style="text-align:right;">Aging Date:</td>
+                                <td style="padding-left:15px;"><span t-field="o.aging_date"/> </td>
+                            </tr>
+                            <tr>
+                                <td width="15%">From Supplier ID#:</td>
+                                <td><span t-esc="FromSupplier"/></td>
+                                <td style="text-align:right;">To: </td>
+                                <td style="padding-left:15px;"><span t-esc="ToSupplier"/></td>
+
+                            </tr>
+                            <tr>
+                                <td>From Area Code: </td>
+                                <td></td>
+                                <td style="text-align:right;">To:</td>
+                                <td style="padding-left:15px;"></td>
+                            </tr>
+                        </table>
+                        <t t-set="record_collection" t-value="o.run_process()" />
+                        <table width="100%">
+                            <t t-set="i" t-value="-1" />
+                            <t t-set="sno" t-value="0" />
+                            <t t-set="running_total" t-value="0" />
+                            <t t-set="tot_profit" t-value="0"/>
+                            <t t-set="isone" t-value="False"/>
+                            <t t-set="istwo" t-value="False"/>
+                            <t t-set="isthree" t-value="False"/>
+                            <t t-set="isfour" t-value="False"/>
+                            <t t-set="isfive" t-value="False"/>
+                            <t t-set="issix" t-value="False"/>
+                            <t t-set="isseven" t-value="False"/>
+                            <t t-set="iseight" t-value="False"/>
+                            <t t-set="isnine" t-value="False"/>
+                            <t t-set="isten" t-value="False"/>
+
+                            <t t-set="one_total" t-value="0"/>
+                            <t t-set="two_total" t-value="0"/>
+                            <t t-set="three_total" t-value="0"/>
+                            <t t-set="four_total" t-value="0"/>
+                            <t t-set="five_total" t-value="0"/>
+                            <t t-set="six_total" t-value="0"/>
+                            <t t-set="seven_total" t-value="0"/>
+                            <t t-set="eight_total" t-value="0"/>
+                            <t t-set="nine_total" t-value="0"/>
+                            <t t-set="ten_total" t-value="0"/>
+
+                            <t t-set="grp_one_total" t-value="0"/>
+                            <t t-set="grp_two_total" t-value="0"/>
+                            <t t-set="grp_three_total" t-value="0"/>
+                            <t t-set="grp_four_total" t-value="0"/>
+                            <t t-set="grp_five_total" t-value="0"/>
+                            <t t-set="grp_six_total" t-value="0"/>
+                            <t t-set="grp_seven_total" t-value="0"/>
+                            <t t-set="grp_eight_total" t-value="0"/>
+                            <t t-set="grp_nine_total" t-value="0"/>
+                            <t t-set="grp_ten_total" t-value="0"/>
+
+                            <t t-set="col" t-value="3"/>
+                            <t t-set="tot_adv" t-value="0"/>
+                            <t t-set="supplier" t-value=""/>
+                            <t t-foreach="record_collection" t-as="line">
+                                <t t-set="i" t-value="i+1" />
+
+                                <tr t-if="i==0">
+                                    <td style="font-weight:bold;border:1px solid;text-align:center;">No#</td>
+                                    <td style="font-weight:bold;border:1px solid;text-align:center;">Ref No</td>
+                                    <td style="font-weight:bold;border:1px solid;text-align:center;">Date</td>
+                                    <td style="font-weight:bold;border:1px solid;text-align:center;">Term</td>
+                                    <td t-if="line.one_head" style="font-weight:bold;border:1px solid;text-align:center;">
+                                        <t t-set="isone" t-value="True"/>
+                                        <t t-set="col" t-value="4"/>
+                                        <span t-field="line.one_head" />
+                                    </td>
+                                    <td t-if="line.two_head" style="font-weight:bold;border:1px solid;text-align:center;">
+                                        <t t-set="istwo" t-value="True"/>
+                                        <t t-set="col" t-value="5"/>
+                                        <span t-field="line.two_head" />
+                                    </td>
+                                    <td t-if="line.three_head" style="font-weight:bold;border:1px solid;text-align:center;">
+                                        <t t-set="isthree" t-value="True"/>
+                                        <t t-set="col" t-value="6"/>
+                                        <span t-field="line.three_head" />
+                                    </td>
+                                    <td t-if="line.four_head" style="font-weight:bold;border:1px solid;text-align:center;">
+                                        <t t-set="isfour" t-value="True"/>
+                                        <t t-set="col" t-value="7"/>
+                                        <span t-field="line.four_head" />
+                                    </td>
+                                    <td t-if="line.five_head" style="font-weight:bold;border:1px solid;text-align:center;">
+                                        <t t-set="isfive" t-value="True"/>
+                                        <t t-set="col" t-value="8"/>
+                                        <span t-field="line.five_head" />
+                                    </td>
+                                    <td t-if="line.six_head" style="font-weight:bold;border:1px solid;text-align:center;">
+                                        <t t-set="issix" t-value="True"/>
+                                        <t t-set="col" t-value="9"/>
+                                        <span t-field="line.six_head" />
+                                    </td>
+                                    <td t-if="line.seven_head" style="font-weight:bold;border:1px solid;text-align:center;">
+                                        <t t-set="isseven" t-value="True"/>
+                                        <t t-set="col" t-value="10"/>
+                                        <span t-field="line.seven_head" />
+                                    </td>
+                                    <td t-if="line.eight_head" style="font-weight:bold;border:1px solid;text-align:center;">
+                                        <t t-set="iseight" t-value="True"/>
+                                        <t t-set="col" t-value="11"/>
+                                        <span t-field="line.eight_head" />
+                                    </td>
+                                    <td t-if="line.nine_head" style="font-weight:bold;border:1px solid;text-align:center;">
+                                        <t t-set="isnine" t-value="True"/>
+                                        <t t-set="col" t-value="12"/>
+                                        <span t-field="line.nine_head" />
+                                    </td>
+                                    <td t-if="line.ten_head" style="font-weight:bold;border:1px solid;text-align:center;">
+                                        <t t-set="isten" t-value="True"/>
+                                        <t t-set="col" t-value="13"/>
+                                        <span t-field="line.ten_head" />
+                                    </td>
+                                    <td style="font-weight:bold;border:1px solid;text-align:center;">
+                                        Balances
+                                    </td>
+                                </tr>
+                                <t t-if="i>0">
+                                    <t t-if="supplier!=line.supplier">
+                                        <t t-set="sno" t-value="sno+1" />
+                                        <tr t-if="sno>1">
+                                            <td></td>
+                                            <td style="text-align:center;"></td>
+                                            <td style="text-align:center;"></td>
+                                            <td style="padding-right:2px;text-align:right;"></td>
+                                            <td t-if="isone" style="text-align:right;border-top:1px solid;">
+                                                <span t-esc="'%.2f'% grp_one_total" />
+                                            </td>
+                                            <td t-if="istwo" style="text-align:right;border-top:1px solid;">
+                                                <span t-esc="'%.2f'% grp_two_total" />
+                                            </td>
+                                            <td t-if="isthree" style="text-align:right;border-top:1px solid;">
+                                                <span t-esc="'%.2f'% grp_three_total" />
+                                            </td>
+                                            <td t-if="isfour" style="text-align:right;border-top:1px solid;">
+                                                <span t-esc="'%.2f'% grp_four_total" />
+                                            </td>
+                                            <td t-if="isfive" style="text-align:right;border-top:1px solid;">
+                                                <span t-esc="'%.2f'% grp_five_total" />
+                                            </td>
+                                            <td t-if="issix" style="text-align:right;border-top:1px solid;">
+                                                <span t-esc="'%.2f'% grp_six_total" />
+                                            </td>
+                                            <td t-if="isseven" style="text-align:right;border-top:1px solid;">
+                                                <span t-esc="'%.2f'% grp_seven_total" />
+                                            </td>
+                                            <td t-if="iseight" style="text-align:right;border-top:1px solid;">
+                                                <span t-esc="'%.2f'% grp_eight_total" />
+                                            </td>
+                                            <td t-if="isnine" style="text-align:right;border-top:1px solid;">
+                                                <span t-esc="'%.2f'% grp_nine_total" />
+                                            </td>
+                                            <td t-if="isten" style="text-align:right;border-top:1px solid;">
+                                                <span t-esc="'%.2f'% grp_ten_total" />
+                                            </td>
+
+                                            <td style="text-align:right;border-top:1px solid;">
+                                                <!--                                    <span t-esc="'%.2f'% (grp_one_total+grp_two_total+grp_three_total+grp_four_total+grp_five_total+grp_six_total+grp_seven_total+grp_eight_total+grp_nine_total+grp_ten_total)" />-->
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <t t-set="grp_one_total" t-value="0"/>
+                                            <t t-set="grp_two_total" t-value="0"/>
+                                            <t t-set="grp_three_total" t-value="0"/>
+                                            <t t-set="grp_four_total" t-value="0"/>
+                                            <t t-set="grp_five_total" t-value="0"/>
+                                            <t t-set="grp_six_total" t-value="0"/>
+                                            <t t-set="grp_seven_total" t-value="0"/>
+                                            <t t-set="grp_eight_total" t-value="0"/>
+                                            <t t-set="grp_nine_total" t-value="0"/>
+                                            <t t-set="grp_ten_total" t-value="0"/>
+
+                                            <td style="text-align:center;"><span t-esc="sno"/> </td>
+
+                                            <td t-if="col==3" colspan="2"><span t-field="line.supplier"/></td>
+                                            <td t-if="col==4" colspan="3"><span t-field="line.supplier"/></td>
+                                            <td t-if="col==5" colspan="4"><span t-field="line.supplier"/></td>
+                                            <td t-if="col==6" colspan="5"><span t-field="line.supplier"/></td>
+                                            <td t-if="col==7" colspan="6"><span t-field="line.supplier"/></td>
+                                            <td t-if="col==8" colspan="7"><span t-field="line.supplier"/></td>
+                                            <td t-if="col==9" colspan="8"><span t-field="line.supplier"/></td>
+                                            <td t-if="col==10" colspan="9"><span t-field="line.supplier"/></td>
+                                            <td t-if="col==11" colspan="10"><span t-field="line.supplier"/></td>
+                                            <td t-if="col==12" colspan="11"><span t-field="line.supplier"/></td>
+                                            <td t-if="col==13" colspan="12"><span t-field="line.supplier"/></td>
+                                            <td>Advance:</td>
+                                            <td style="text-align:right;">
+                                                <t t-set="running_total" t-value="line.advance"/>
+                                                <t t-set="tot_adv" t-value="tot_adv+line.advance"/>
+                                                <span t-field="line.advance"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                    <t t-set="supplier" t-value="line.supplier"/>
+                                </t>
+                                <tr t-if="i>0">
+
+                                    <t t-set="line_total" t-value="0"/>
+
+                                    <td style="text-align:center;"></td>
+                                    <td style="text-align:center;"><span t-field="line.ref_no" /></td>
+                                    <td style="text-align:center;"><span t-field="line.date" /></td>
+                                    <td style="padding-left:1px;"><span t-field="line.term" /></td>
+                                    <td t-if="isone" style="text-align:right;">
+                                        <t t-set="line_total" t-value="line_total+line.one"/>
+                                        <t t-set="one_total" t-value="one_total+line.one"/>
+                                        <t t-set="grp_one_total" t-value="grp_one_total+line.one"/>
+                                        <span t-field="line.one" />
+                                    </td>
+                                    <td t-if="istwo" style="text-align:right;">
+                                        <t t-set="line_total" t-value="line_total+line.two"/>
+                                        <t t-set="two_total" t-value="two_total+line.two"/>
+                                        <t t-set="grp_two_total" t-value="grp_two_total+line.two"/>
+                                        <span t-field="line.two" />
+                                    </td>
+                                    <td t-if="isthree" style="text-align:right;">
+                                        <t t-set="line_total" t-value="line_total+line.three"/>
+                                        <t t-set="three_total" t-value="three_total+line.three"/>
+                                        <t t-set="grp_three_total" t-value="grp_three_total+line.three"/>
+                                        <span t-field="line.three" />
+                                    </td>
+                                    <td t-if="isfour" style="text-align:right;">
+                                        <t t-set="line_total" t-value="line_total+line.four"/>
+                                        <t t-set="four_total" t-value="four_total+line.four"/>
+                                        <t t-set="grp_four_total" t-value="grp_four_total+line.four"/>
+                                        <span t-field="line.four" />
+                                    </td>
+                                    <td t-if="isfive" style="text-align:right;">
+                                        <t t-set="line_total" t-value="line_total+line.five"/>
+                                        <t t-set="five_total" t-value="five_total+line.five"/>
+                                        <t t-set="grp_five_total" t-value="grp_five_total+line.five"/>
+                                        <span t-field="line.five" />
+                                    </td>
+                                    <td t-if="issix" style="text-align:right;">
+                                        <t t-set="line_total" t-value="line_total+line.six"/>
+                                        <t t-set="six_total" t-value="six_total+line.six"/>
+                                        <t t-set="grp_six_total" t-value="grp_six_total+line.six"/>
+                                        <span t-field="line.six" />
+                                    </td>
+                                    <td t-if="isseven" style="text-align:right;">
+                                        <t t-set="line_total" t-value="line_total+line.seven"/>
+                                        <t t-set="seven_total" t-value="seven_total+line.seven"/>
+                                        <t t-set="grp_seven_total" t-value="grp_seven_total+line.seven"/>
+                                        <span t-field="line.seven" />
+                                    </td>
+                                    <td t-if="iseight" style="text-align:right;">
+                                        <t t-set="line_total" t-value="line_total+line.eight"/>
+                                        <t t-set="eight_total" t-value="eight_total+line.eight"/>
+                                        <t t-set="grp_eight_total" t-value="grp_eight_total+line.eight"/>
+                                        <span t-field="line.eight" />
+                                    </td>
+                                    <td t-if="isnine" style="text-align:right;">
+                                        <t t-set="line_total" t-value="line_total+line.nine"/>
+                                        <t t-set="nine_total" t-value="nine_total+line.nine"/>
+                                        <t t-set="grp_nine_total" t-value="grp_nine_total+line.nine"/>
+                                        <span t-field="line.nine" />
+                                    </td>
+                                    <td t-if="isten" style="text-align:right;">
+                                        <t t-set="line_total" t-value="line_total+line.ten"/>
+                                        <t t-set="ten_total" t-value="ten_total+line.ten"/>
+                                        <t t-set="grp_ten_total" t-value="grp_ten_total+line.ten"/>
+                                        <span t-field="line.ten" />
+                                    </td>
+                                    <td style="text-align:right;">
+                                        <t t-set="running_total" t-value="running_total+line_total"/>
+                                        <span t-esc="'%.2f'% running_total" />
+                                    </td>
+                                </tr>
+
+                            </t>
+                            <!-- Supplier Total -->
+
+                            <tr>
+                                <td></td>
+                                <td style="text-align:center;"></td>
+                                <td style="text-align:center;"></td>
+                                <td style="padding-right:2px;text-align:right;"></td>
+                                <td t-if="isone" style="text-align:right;border-top:1px solid;">
+                                    <span t-esc="'%.2f'% grp_one_total" />
+                                </td>
+                                <td t-if="istwo" style="text-align:right;border-top:1px solid;">
+                                    <span t-esc="'%.2f'% grp_two_total" />
+                                </td>
+                                <td t-if="isthree" style="text-align:right;border-top:1px solid;">
+                                    <span t-esc="'%.2f'% grp_three_total" />
+                                </td>
+                                <td t-if="isfour" style="text-align:right;border-top:1px solid;">
+                                    <span t-esc="'%.2f'% grp_four_total" />
+                                </td>
+                                <td t-if="isfive" style="text-align:right;border-top:1px solid;">
+                                    <span t-esc="'%.2f'% grp_five_total" />
+                                </td>
+                                <td t-if="issix" style="text-align:right;border-top:1px solid;">
+                                    <span t-esc="'%.2f'% grp_six_total" />
+                                </td>
+                                <td t-if="isseven" style="text-align:right;border-top:1px solid;">
+                                    <span t-esc="'%.2f'% grp_seven_total" />
+                                </td>
+                                <td t-if="iseight" style="text-align:right;border-top:1px solid;">
+                                    <span t-esc="'%.2f'% grp_eight_total" />
+                                </td>
+                                <td t-if="isnine" style="text-align:right;border-top:1px solid;">
+                                    <span t-esc="'%.2f'% grp_nine_total" />
+                                </td>
+                                <td t-if="isten" style="text-align:right;border-top:1px solid;">
+                                    <span t-esc="'%.2f'% grp_ten_total" />
+                                </td>
+
+                                <td style="text-align:right;border-top:1px solid;">
+                                    <!--                                    <span t-esc="'%.2f'% (grp_one_total+grp_two_total+grp_three_total+grp_four_total+grp_five_total+grp_six_total+grp_seven_total+grp_eight_total+grp_nine_total+grp_ten_total)" />-->
+                                </td>
+                            </tr>
+
+                            <!-- Grand Total -->
+                            <tr style="border-top:1px solid;">
+                                <td></td>
+                                <td style="text-align:center;"></td>
+                                <td style="text-align:center;"></td>
+                                <td style="padding-right:2px;text-align:right;">Grand Total</td>
+                                <td t-if="isone" style="text-align:right;">
+                                    <span t-esc="'%.2f'% one_total" />
+                                </td>
+                                <td t-if="istwo" style="text-align:right;">
+                                    <span t-esc="'%.2f'% two_total" />
+                                </td>
+                                <td t-if="isthree" style="text-align:right;">
+                                    <span t-esc="'%.2f'% three_total" />
+                                </td>
+                                <td t-if="isfour" style="text-align:right;">
+                                    <span t-esc="'%.2f'% four_total" />
+                                </td>
+                                <td t-if="isfive" style="text-align:right;">
+                                    <span t-esc="'%.2f'% five_total" />
+                                </td>
+                                <td t-if="issix" style="text-align:right;">
+                                    <span t-esc="'%.2f'% six_total" />
+                                </td>
+                                <td t-if="isseven" style="text-align:right;">
+                                    <span t-esc="'%.2f'% seven_total" />
+                                </td>
+                                <td t-if="iseight" style="text-align:right;">
+                                    <span t-esc="'%.2f'% eight_total" />
+                                </td>
+                                <td t-if="isnine" style="text-align:right;">
+                                    <span t-esc="'%.2f'% nine_total" />
+                                </td>
+                                <td t-if="isten" style="text-align:right;">
+                                    <span t-esc="'%.2f'% ten_total" />
+                                </td>
+
+                                <td style="text-align:right;">
+                                    <span t-esc="'%.2f'% (one_total+two_total+three_total+four_total+five_total+six_total+seven_total+eight_total+nine_total+ten_total)" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td t-if="col==3" colspan="1"></td>
+                                <td t-if="col==4" colspan="2"></td>
+                                <td t-if="col==5" colspan="3"></td>
+                                <td t-if="col==6" colspan="4"></td>
+                                <td t-if="col==7" colspan="5"></td>
+                                <td t-if="col==8" colspan="6"></td>
+                                <td t-if="col==9" colspan="7"></td>
+                                <td t-if="col==10" colspan="8"></td>
+                                <td t-if="col==11" colspan="9"></td>
+                                <td t-if="col==12" colspan="10"></td>
+                                <td t-if="col==13" colspan="11"></td>
+                                <td colspan="3" style="text-align:right;padding:right:5x;">Less Total Advance :</td>
+                                <td style="text-align:right;border-bottom:1px solid;">
+                                    <span t-esc="tot_adv"/>
+                                </td>
+                            </tr>
+
+                            <tr style="border-bottom:1px solid;">
+                                <td t-if="col==3" colspan="3"></td>
+                                <td t-if="col==4" colspan="4"></td>
+                                <td t-if="col==5" colspan="5"></td>
+                                <td t-if="col==6" colspan="6"></td>
+                                <td t-if="col==7" colspan="7"></td>
+                                <td t-if="col==8" colspan="8"></td>
+                                <td t-if="col==9" colspan="9"></td>
+                                <td t-if="col==10" colspan="10"></td>
+                                <td t-if="col==11" colspan="11"></td>
+                                <td t-if="col==12" colspan="12"></td>
+                                <td t-if="col==13" colspan="13"></td>
+                                <td></td>
+                                <td style="text-align:right;">
+                                    <span t-esc="'%.2f'% (one_total+two_total+three_total+four_total+five_total+six_total+seven_total+eight_total+nine_total+ten_total+tot_adv)"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <t t-set="total_aging" t-value="(one_total+two_total+three_total+four_total+five_total+six_total+seven_total+eight_total+nine_total+ten_total)"/>
+                                <td></td>
+                                <td style="text-align:center;"></td>
+                                <td style="text-align:center;"></td>
+                                <td style="padding-right:2px;text-align:right;"></td>
+                                <td t-if="isone" style="text-align:right;">
+                                    <span t-esc="'%.2f'% ((one_total / total_aging)*100)" />%
+                                </td>
+                                <td t-if="istwo" style="text-align:right;">
+                                    <span t-esc="'%.2f'% ((two_total / total_aging)*100)" />%
+                                </td>
+                                <td t-if="isthree" style="text-align:right;">
+                                    <span t-esc="'%.2f'% ((three_total / total_aging)*100)" />%
+                                </td>
+                                <td t-if="isfour" style="text-align:right;">
+                                    <span t-esc="'%.2f'% ((four_total / total_aging)*100)" />%
+                                </td>
+                                <td t-if="isfive" style="text-align:right;">
+                                    <span t-esc="'%.2f'% ((five_total / total_aging)*100)" />%
+                                </td>
+                                <td t-if="issix" style="text-align:right;">
+                                    <span t-esc="'%.2f'% ((six_total / total_aging)*100)" />%
+                                </td>
+                                <td t-if="isseven" style="text-align:right;">
+                                    <span t-esc="'%.2f'% ((seven_total / total_aging)*100)" />%
+                                </td>
+                                <td t-if="iseight" style="text-align:right;">
+                                    <span t-esc="'%.2f'% ((eight_total / total_aging)*100)" />%
+                                </td>
+                                <td t-if="isnine" style="text-align:right;">
+                                    <span t-esc="'%.2f'% ((nine_total / total_aging)*100)" />%
+                                </td>
+                                <td t-if="isten" style="text-align:right;">
+                                    <span t-esc="'%.2f'% ((ten_total / total_aging)*100)" />%
+                                </td>
+
+                                <td style="text-align:right;">
+                                </td>
+                            </tr>
+                            <!--                          <tr>-->
+                            <!--                              <td style="border:1px solid;text-align:center;" colspan="9" >Total</td>-->
+                            <!--                              <td style="border:1px solid;text-align:right;"><span t-esc="tot_profit" t-options='{"widget": "float", "precision": 2}'/></td>-->
+                            <!--                          </tr>-->
+                        </table>
+                    </t>
+                </t>
+            </t>
+        </template>
+        <record id="action_sup_detail_aging_report" model="ir.actions.act_window">
+            <field name="name">Supplier Detail Aging Report</field>
+            <field name="res_model">sup.detail.aging.report.wiz</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_sup_detail_aging_report" />
+        </record>
+        <menuitem id="menu_item_sup_detail_aging_report" name="Supplier Detail Aging Report" parent="account.menu_finance_reports"  action="action_sup_detail_aging_report"/>
+    </data>
+</odoo>

@@ -1,0 +1,37 @@
+issuer: NTUC Fairprice Co-operative Limited
+fields:
+  amount: Total Net Amount\s+(.+[.]\d{4})
+  date: Order Date (\s+\d{1,2}\_\d{1,2}\_\d{1,4})
+  delivery_date: Delivery Date:(\d{2}-\d{2}-\d{4})
+  invoice_number: Purchase Order No.\s+(\d{1,})
+  store_code: \sST(\d{1,})
+  cus_po_num: Purchase Order No. \s+(\d{1,})
+  no_of_product_ordered: Total No. of Products Quantity in CTN:(\d+.\d{2})
+  partner_name: NTUC Fairprice Co-operative Limited
+keywords:
+- TEENI
+- TEENI ENTERPRISES PTE LTD
+- NTUC Fairprice Co-operative Limited
+- NTUC
+- Fairprice
+
+
+options:
+  currency: SGD
+  remove_whitespace: false
+  date_formats:
+    - '%dd/%mm/%YYYY'
+  decimal_separator: '.'
+  languages:
+    - en
+  replace:
+    - ['/','_']
+
+lines:
+  start: 'S_No\s+EAN_Description\s+Packing\s+UOM\s+Qty\s+Unit Price\s+Total\s+'
+  end: 'Total No of Items'
+  first_line: '^(?P<S_NO>\d{1,})\s+(?P<barcode>\d+)\s+(?P<pack_qty>\d+)\s+(?P<UOM>\w+)\s+(?P<Qty>\d{1,}.\d+)\s+(?P<Unit_Price>\d{1,}.\d+)\s+(?P<Total>\d{1,}.\d+)'
+  line: '^(?P<S_No>\d{1,})$'
+  line: '^(?P<description>.+)\s+:(?P<cus_code>.+)$'
+  type:
+    Total: float

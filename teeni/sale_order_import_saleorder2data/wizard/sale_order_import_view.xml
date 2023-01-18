@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo>
+
+
+<record id="sale_order_import_form" model="ir.ui.view">
+    <field name="name">invoice2data.sale.order.import.form</field>
+    <field name="model">sale.order.import</field>
+    <field name="inherit_id" ref="sale_order_import.sale_order_import_form"/>
+    <field name="arch"  type="xml">
+        <ul name="supported_formats_list" position="inside">
+                <li><b>regular PDF</b> file without any embedded XML file via the <a href="https://github.com/invoice-x/invoice2data/" target="_blank">invoice2data</a> library (reads the text of the PDF and get the information). It will work only if the invoice2data library has a template for the invoices of that customer.</li>
+        </ul>
+    </field>
+</record>
+
+
+</odoo>

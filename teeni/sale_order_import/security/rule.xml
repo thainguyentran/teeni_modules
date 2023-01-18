@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<odoo noupdate="1">
+
+
+<record id="sale_order_import_config_rule" model="ir.rule">
+    <field name="name">Import Sale Order Configuration multi-company</field>
+    <field name="model_id" ref="model_sale_order_import_config"/>
+    <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'child_of', [user.company_id.id])]</field>
+</record>
+
+
+</odoo>

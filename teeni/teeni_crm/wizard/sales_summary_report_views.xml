@@ -1,0 +1,117 @@
+<odoo>
+  <data>
+    <record id="view_sales_summary_report_form" model="ir.ui.view">
+      <field name="name">sales.summary.report.form.view</field>
+      <field name="model">sales.summary.report.wiz</field>
+      <field name="arch" type="xml">
+        <form string="Sales Summary Report" create="false" edit="false" save="false" discard="false">
+          <header>
+            <button name="run_process" string="Process" type="object" class="btn-primary" />
+            <button name="print_report" string="Print" type="object" class="btn-primary" />
+            <button name="export_to_excel" string="Export to Excel" type="object" class="btn-primary" />
+          </header>
+          <group>
+            <group>
+                <field name="year" />
+                <field name="month" />
+                <field name="day" />
+            </group>
+            <group>
+              <field name="customer" domain="[('customer','=',True), ('parent_id', '=', False)]"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Sales Summary Report Lines">
+              <field name="sales_lines" readonly="1">
+                <tree editable="bottom">
+                  <field name="sale_order" />
+                  <field name="customer_name" />
+                  <field name="total_ordered_qty" />
+                  <field name="total_delivered_qty" />
+                  <field name="total_not_delivered_qty" />
+                  <field name="total" />
+                  <field name="sale_date"/>
+                  <field name="delivered_date"/>
+                </tree>
+              </field>
+            </page>
+          </notebook>
+        </form>
+      </field>
+    </record>
+
+    <report
+      string="Sales Summary Report"
+      id="action_sales_summary_report"
+      model="sales.summary.report.wiz"
+      report_type="qweb-html"
+      name="teeni_crm.sales_summary_report"
+      file="teeni_crm.sales_summary_report"
+      print_report_name="'Sales Summary Report'"
+      paperformat="sales_report_paperformat_portrait"
+    />
+
+      <report
+          id="sales_summary_report_excel"
+          model="sales.summary.report.wiz"
+          string="Export To Excel"
+          report_type="xlsx"
+          name="teeni_crm.ssr_excel"
+          file="ssr_excel"
+          />
+
+      <template id="sales_summary_report">
+          <t t-call="web.html_container">
+              <t t-foreach="docs" t-as="o">
+                  <t t-call="web.basic_layout">
+                      <table width="100%">
+                          <tr>
+                              <td style="text-align:center;">
+                                  <h3>Sales Report</h3>
+                                  <br/>
+                                  <br/>
+                              </td>
+                          </tr>
+                      </table>
+                      <t t-set="record_collection" t-value="o.run_process()" />
+                      <table width="100%">
+                          <tr>
+                              <th style="border:1px solid;text-align:center;"><strong>NO</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Sale Order</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Customer Name</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Ordered Quantity</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Delivered Quantity</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Not Delivered Quantity</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Total</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Sale Date</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Delivered Date</strong></th>
+                          </tr>
+                          <t t-set="i" t-value="0" />
+                          <tr t-foreach="record_collection" t-as="line">
+                            <t t-set="i" t-value="i+1" />
+                            <td style="border:1px solid;text-align:center;"><span t-esc="i" /></td>
+                            <td style="border:1px solid;padding-left:1px;"><span t-field="line.sale_order" /></td>
+                            <td style="border:1px solid;text-align:center;"><span t-field="line.customer_name" /></td>
+                            <td style="border:1px solid;text-align:center;"><span t-field="line.total_ordered_qty" /></td>
+                            <td style="border:1px solid;text-align:center;"><span t-field="line.total_delivered_qty" /></td>
+                            <td style="border:1px solid;text-align:center;"><span t-field="line.total_not_delivered_qty" /></td>
+                            <td style="border:1px solid;text-align:center;"><span t-field="line.total" /></td>
+                            <td style="border:1px solid;text-align:center;"><span t-field="line.sale_date" /></td>
+                            <td style="border:1px solid;text-align:center;"><span t-field="line.delivered_date" /></td>
+                          </tr>
+                      </table>
+                  </t>
+              </t>
+          </t>
+        </template>
+        <record id="action_report_sales_summary" model="ir.actions.act_window">
+            <field name="name">Sales Summary Report</field>
+            <field name="res_model">sales.summary.report.wiz</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="view_id" ref="view_sales_summary_report_form" />
+        </record>
+        <menuitem id="menu_item_sales_summary_report" name="Sales Summary Report" parent="sale.menu_sale_report"  action="action_report_sales_summary"/>
+    </data>
+</odoo>

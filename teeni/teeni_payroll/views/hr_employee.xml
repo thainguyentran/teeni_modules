@@ -1,0 +1,46 @@
+<odoo>
+  <data>
+    <record id="view_employee_form_parent3" model="ir.ui.view">
+        <field name="name">hr.employee.form.parent3</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('oe_title')]" position="inside">
+                <label for="employee_no" class="oe_edit_only"/>
+                <h1>
+                    <field name="employee_no" placeholder="Employee's Number" required="True"/>
+                </h1>
+            </xpath>
+            <field name="permit_no" position="after">
+                <field name="work_permit_start_date"/>
+            </field>
+            <field name="employee_type" position="after">
+                <field name="payment_mode"/>
+                <field name="cpf_included"/>
+            </field>
+            <field name="leave_manager" position="after">
+                <field name="leave_approve_rule" required="1"/>
+            </field>
+            <field name="manager" position="after">
+                <field name="is_alternative_saturday"/>
+            </field>
+
+        </field>
+    </record>
+
+    <record id="view_hr_contract_form_inherit" model="ir.ui.view">
+		<field name="name">hr.contract.form.inherit</field>
+		<field name="model">hr.contract</field>
+		<field name="inherit_id" ref="hr_contract.hr_contract_view_form" />
+		<field name="arch" type="xml">
+            <field name="rate_per_hour" position="after">
+                <field name="mobile_allowance"/>
+                <field name="housing_allowance"/>
+                <field name="cdac"/>
+                <field name="mbmf"/>
+                <field name="sinda"/>
+            </field>
+        </field>
+    </record>
+  </data>
+</odoo>

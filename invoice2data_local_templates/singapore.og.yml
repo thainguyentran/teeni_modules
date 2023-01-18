@@ -1,0 +1,32 @@
+issuer: OG PRIVATED LIMITED
+fields:
+  amount: TAXABLE AMOUNT:\s+\$(\d{1,}[.]\d{1,})
+  date: EARLST DLV:\s+(\d{2}/\d{2}/\d{4})
+  delivery_date: LATEST DLV:\s+(\d{2}/\d{2}/\d{4})
+  invoice_number: \*(\d{1,})\*
+  store_code: DELIVERY TO:\s+(\w{3})
+  cus_po_num: \*(\d{1,})\*
+  no_of_product_ordered: Total No of Items(\s+\d)
+  partner_name: OG PTE LTD
+keywords:
+- TEENI ENTERPRISE PTE LTD
+- OG ALBERT COMPLEX
+- 60 ALBERT STREET
+
+options:
+  currency: SGD
+  remove_whitespace: false
+  date_formats:
+    - '%dd/%mm/%YYYY'
+  decimal_separator: '.'
+  languages:
+    - en
+
+lines:
+  start: 'BRAN\s'
+  end: '.+LAST ITEM\s'
+  first_line: '^(?P<brand>.+)\s+(?P<cus_code>\w.+)\s+(?P<UOM>\w{1,})\s+(?P<qor>\d{1,})\s+(?P<dsf>\d{1,})\s+\$(?P<rtail_price>\d{1,}.\d{1,})\s+\$(?P<Unit_Price>\d{1,}.\d{1,})\s+(?P<Qty>\d{1,})'
+  line: '^(?P<brand>)$'
+  line: '^(?P<description>.+)\s+(?P<barcode>\d.+)$'
+  type:
+    Total: float

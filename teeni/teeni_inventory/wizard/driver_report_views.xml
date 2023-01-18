@@ -1,0 +1,117 @@
+<odoo>
+  <data>
+    <record id="view_driver_report_form" model="ir.ui.view">
+      <field name="name">driver.report.form.view</field>
+      <field name="model">driver.report.wiz</field>
+      <field name="arch" type="xml">
+        <form string="Driver Report" create="false" edit="false" save="false" discard="false">
+          <header>
+            <button name="run_process" string="Process" type="object" class="btn-primary" />
+            <button name="export_to_excel" string="Export to Excel" type="object" class="btn-primary" />
+          </header>
+          <group>
+            <group>
+                <field name="date" />
+                <field name="driver"/>
+            </group>
+          </group>
+          <notebook>
+            <page string="Driver Report Lines">
+              <field name="driver_lines" readonly="1">
+                <tree editable="bottom">
+                  <field name="do_name" />
+                  <field name="driver_name" />
+                  <field name="delivery_date" />
+                  <field name="customer_name" />
+                  <field name="cus_po_num" />
+                </tree>
+              </field>
+            </page>
+          </notebook>
+        </form>
+      </field>
+    </record>
+    <record id="driver_report_paperformat_portrait" model="report.paperformat">
+        <field name="name">Driver Report Paper Format Landscape</field>
+        <field name="default" eval="True" />
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">1</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">1</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <report
+      string="Driver Report"
+      id="action_driver_report"
+      model="driver.report.wiz"
+      report_type="qweb-html"
+      name="teeni_crm.driver_report"
+      file="teeni_crm.driver_report"
+      print_report_name="'Driver Report'"
+      paperformat="driver_report_paperformat_portrait"
+    />
+
+      <report
+          id="driver_report_excel"
+          model="driver.report.wiz"
+          string="Export To Excel"
+          report_type="xlsx"
+          name="teeni_crm.dr_excel"
+          file="dr_excel"
+          />
+
+      <template id="driver_report">
+          <t t-call="web.html_container">
+              <t t-foreach="docs" t-as="o">
+                  <t t-call="web.basic_layout">
+                      <table width="100%">
+                          <tr>
+                              <td style="text-align:center;">
+                                  <h3>Driver Report</h3>
+                                  <br/>
+                                  <br/>
+                              </td>
+                          </tr>
+                      </table>
+                      <t t-set="record_collection" t-value="o.run_process()" />
+                      <table width="100%">
+                          <tr>
+                              <th style="border:1px solid;text-align:center;"><strong>DO</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Driver Name</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Delivery Date</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Customer</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Customer Po Number</strong></th>
+                          </tr>
+                          <t t-set="i" t-value="0" />
+                          <tr t-foreach="record_collection" t-as="line">
+                              <t t-set="i" t-value="i+1" />
+                              <td style="border:1px solid;text-align:center;"><span t-esc="i" /></td>
+                              <td style="border:1px solid;padding-left:1px;"><span t-field="line.do_name" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.driver_name" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.delivery_date" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.customer_name" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.cus_po_num" /></td>
+                          </tr>
+                      </table>
+                  </t>
+              </t>
+          </t>
+        </template>
+        <record id="action_report_driver" model="ir.actions.act_window">
+            <field name="name">Driver Report</field>
+            <field name="res_model">driver.report.wiz</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="view_id" ref="view_driver_report_form" />
+        </record>
+        <menuitem id="menu_item_driver_report" name="Driver Report" parent="stock.menu_warehouse_report"  action="action_report_driver"/>
+    </data>
+</odoo>

@@ -1,0 +1,178 @@
+<odoo>
+    <data>
+        <record id="supplier_grn_paper_format_portrait" model="report.paperformat">
+            <field name="name">Supplier GRN Paper Format Portrait</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">115.5</field>
+            <field name="margin_bottom">82</field>
+            <field name="margin_left">2</field>
+            <field name="margin_right">2</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">116</field>
+            <field name="dpi">90</field>
+        </record>
+        <report
+            string="Supplier Goods Receive Note"
+            id="action_supplier_grn_print"
+            model="stock.picking"
+            report_type="qweb-html"
+            name="teeni_acconting.supplier_grn_print"
+            file="teeni_acconting.supplier_grn_print"
+            print_report_name="
+                'Supplier Goods Receive Note - %s' % (object.name)"
+            paperformat="supplier_grn_paper_format_portrait"
+        />
+
+        <template id="supplier_grn_print">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <div class="header" style="padding-top:20px;">
+                            <div style="font-size:28px;font-weight:bold;">TEENI ENTERPRISE PTE LTD</div>
+                            <div>139 KAKI BUKIT AVENUE 1 #03-00</div>
+                            <div>SINGAPORE 416004</div>
+                            <div>Tel : 68416370</div>
+                            <div>UEN No : 199303608W &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                                 GST No : M2-0115362-0
+                            </div>
+
+                            <div style="font-size:32px;font-weight:bold;margin-top:20px;text-align:center;">GOODS RECEIVED NOTE</div>
+
+                            <table width="100%" >
+                                <tr>
+                                    <td width="50%" rowspan="9" style="padding-left:10px;">
+                                        <div style="padding-left:0px;">
+                                            <div style="font-weight:bold;">Supplier</div>
+                                            <div t-if="doc.partner_id.name" style="font-weight:bold;"> <span t-field="doc.partner_id.name"/></div>
+                                            <div t-if="doc.partner_id.street"> <span t-field="doc.partner_id.street"/></div>
+                                            <div t-if="doc.partner_id.street2"><span t-field="doc.partner_id.street2"/></div>
+                                            <div t-if="doc.partner_id.city">
+                                                <span t-field="doc.partner_id.city"/>
+                                                <span t-field="doc.partner_id.zip"/>
+                                            </div>
+                                            <div>Tel No: <span t-field="doc.partner_id.phone"/> </div>
+
+                                        </div>
+                                    </td>
+                                    <td>G/R NO</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span t-field="doc.name"/> </td>
+                                </tr>
+                                <tr>
+                                    <td>DATE</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span t-field="doc.scheduled_date"/> </td>
+                                </tr>
+                                <tr>
+                                    <td>P/O NO</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; <span t-field="doc.purchase_id.name"/> </td>
+                                </tr>
+                                <tr>
+                                    <td>SUPP D/O NO</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; </td>
+                                </tr>
+                                <tr>
+                                    <t t-set="sup_inv_no" t-value=""/>
+                                    <t t-foreach="doc.purchase_id.invoice_ids" t-as="si">
+                                        <t t-set="sup_inv_no" t-value="si.reference"/>
+                                    </t>
+                                    <td>SUPP INV NO</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; <span t-esc="sup_inv_no"/> </td>
+                                </tr>
+                                <tr>
+                                    <td>RECEIVED BY</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; </td>
+                                </tr>
+                                <tr>
+                                    <td>CURRENCY</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; <span t-field="doc.purchase_id.currency_id.name"/> </td>
+                                </tr>
+                                <tr>
+                                    <td>PAGE</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; <span class="page"/>/<span class="topage"/></td>
+                                </tr>
+                                <tr>
+                                    <td>REMARKS</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; <span t-field="doc.note"/> </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div style="font-weight:bold;">Delivered To:</div>
+                                        <div>
+                                            <div t-if="doc.picking_type_id.warehouse_id.partner_id.name"> <span t-field="doc.picking_type_id.warehouse_id.partner_id.name"/></div>
+                                            <div t-if="doc.picking_type_id.warehouse_id.partner_id.street"> <span t-field="doc.picking_type_id.warehouse_id.partner_id.street"/></div>
+                                            <div t-if="doc.picking_type_id.warehouse_id.partner_id.street2"><span t-field="doc.picking_type_id.warehouse_id.partner_id.street2"/></div>
+                                            <div t-if="doc.picking_type_id.warehouse_id.partner_id.city">
+                                                <span t-field="doc.picking_type_id.warehouse_id.partner_id.city"/>
+                                                <span t-field="doc.picking_type_id.warehouse_id.partner_id.zip"/>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                        <div class="Page" style="height:100%;" >
+                            <table width="100%">
+                                <tr style="border-top:1px solid;border-bottom:1px solid;">
+                                    <td style="text-align:left;font-weight:bold;" width="5%">NO</td>
+                                    <td style="text-align:left;font-weight:bold;" width="20%">STOCK CODE</td>
+                                    <td style="text-align:left;font-weight:bold;" width="">DESCRIPTION</td>
+                                    <td style="text-align:center;font-weight:bold;" width="15%" colspan="2">RECEIVED QTY</td>
+                                </tr>
+                                <t t-set="i" t-value="0"/>
+                                <t t-set="total_qty" t-value="0"/>
+                                <t t-foreach="doc.move_ids_without_package" t-as="line">
+                                  <t t-set="i" t-value="i+1"/>
+                                  <t t-set="total_qty" t-value="total_qty+line.quantity_done"/>
+                                  <tr>
+                                      <td><span t-esc="i"></span></td>
+                                      <td><span t-field="line.product_id.default_code"></span></td>
+                                      <td><span t-field="line.name"></span></td>
+                                      <td style="text-align:right;" width="8%"><span t-esc="'{0:,.0f}'.format(line.quantity_done)"></span></td>
+                                      <td style="padding-left:2px;" width="7%"><span t-field="line.product_uom.name"></span></td>
+                                  </tr>
+                                </t>
+
+                            </table>
+
+                        </div>
+                        <div class="footer o_standard_footer;" style="margin-top:0px !important;border-top:4px solid; padding-top:1px;">
+                            <div style="text-align:center;font-weight:bold; font-size:9px;">E&amp;O.E.</div>
+                            <table width="100%">
+                                <tr>
+                                    <td width="10%"></td>
+                                    <td width="65%"></td>
+                                    <td width="20%">Total Received Quantity:</td>
+                                    <td width="15%" style="text-align:center;"><span t-esc="'{0:,.0f}'.format(total_qty)"/> </td>
+                                </tr>
+                            </table>
+                            <div style="margin-top:100px;">
+                                <div style="float:left">
+                                    Good received in good order and condition
+                                </div>
+                                <div style="float:right; font-weight:bold;">
+                                    TEENI ENTERPRISE PTE LTD
+                                </div>
+                            </div>
+                            <div style="margin-top:250px;margin-left:2%;">
+                                <table style="text-align:center;" width="96%">
+                                    <tr>
+                                        <td width="25%" style="font-weight:bold;border-top:1px solid;">Received By</td>
+                                        <td width="50%" style=""></td>
+                                        <td width="25%" style="font-weight:bold;border-top:1px solid;">Approved / Date</td>
+                                    </tr>
+                                </table>
+                            </div>
+
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+
+    </data>
+</odoo>

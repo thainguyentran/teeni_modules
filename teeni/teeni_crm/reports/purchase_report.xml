@@ -1,0 +1,251 @@
+<odoo>
+    <data>
+        <record id="purchase_order_paper_format_portrait" model="report.paperformat">
+            <field name="name">Purchase Order Paper Format Portrait</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">90.5</field>
+            <field name="margin_bottom">82</field>
+            <field name="margin_left">2</field>
+            <field name="margin_right">2</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">91</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <report
+            string="Print Purchase Order(Preview)"
+            id="action_purchase_order_print_preview"
+            model="purchase.order"
+            report_type="qweb-html"
+            name="teeni_crm.purchase_order_print"
+            file="teeni_crm.purchase_order_print"
+            print_report_name="
+                'Purchase Order - %s' % (object.name)"
+            paperformat="purchase_order_paper_format_portrait"
+        />
+
+        <report
+            string="Print Purchase Order"
+            id="action_purchase_order_print"
+            model="purchase.order"
+            report_type="qweb-pdf"
+            name="teeni_crm.purchase_order_print"
+            file="teeni_crm.purchase_order_print"
+            print_report_name="
+                'Purchase Order - %s' % (object.name)"
+            paperformat="purchase_order_paper_format_portrait"
+        />
+
+        <template id="purchase_order_print">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <div class="header" style="padding-top:20px;">
+                            <table width="100%" >
+                                <tr>
+                                    <td width="58%">
+<!--                                        <img t-if="doc.company_id.logo" width="100%" t-att-src="image_data_uri(doc.company_id.logo)" alt="Logo"/>-->
+                                        <div style="height:80px;font-size:28px;font-weight:bold;">TEENI ENTERPRISE PTE LTD</div>
+                                        <div t-if="doc.company_id.street"> <span t-field="doc.company_id.street"/></div>
+                                        <div t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/></div>
+                                        <div t-if="doc.company_id.country_id">
+                                            <span t-field="doc.company_id.country_id.name"/>
+                                            <span t-field="doc.company_id.zip"/>
+                                        </div>
+                                        <div t-if="doc.company_id.phone">
+                                            Tel : <span t-field="doc.company_id.phone"/>
+                                            Fax: 6841 6372
+                                        </div>
+                                        <div style="font-size:14px;">
+                                            CO REG NO: 199303608W GST REG NO: M2-0115362-0
+                                        </div>
+                                    </td>
+                                    <td width="2%"></td>
+                                    <td width="48%">
+                                        <table width="100%" style="text-align:center;border:1px solid;">
+                                            <tr>
+                                                <td colspan="3" style="text-align:center;border:1px solid;">
+                                                    <t t-if="doc.state == 'draft'">
+                                                        <div style="font-size:32px;font-weight:bold;">QUOTATION</div>
+                                                    </t>
+                                                    <t t-esle="">
+                                                        <div style="font-size:32px;font-weight:bold;">PURCHASE ORDER</div>
+                                                    </t>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="3" style="border:1px solid;">
+                                                    PAGE
+                                                    <div>
+                                                        <span class="page"/>/<span class="topage"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr height="150" >
+                                    <td style="border:1px solid;">
+                                        <div style="padding-left:30px;">
+                                            <div t-if="doc.partner_id.name"> <span t-field="doc.partner_id.name"/></div>
+                                            <div t-if="doc.partner_id.street"> <span t-field="doc.partner_id.street"/></div>
+                                            <div t-if="doc.partner_id.street2"><span t-field="doc.partner_id.street2"/></div>
+                                            <div t-if="doc.partner_id.city">
+                                                <span t-field="doc.partner_id.city"/>
+                                                <span t-field="doc.partner_id.zip"/>
+                                            </div>
+                                            <div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td style=""></td>
+                                    <td>
+                                        <table width="100%" style="text-align:center;">
+                                        <tr>
+                                            <td style="border:1px solid;">ORDER NO</td>
+                                            <td style="border:1px solid;"><span t-field="doc.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border:1px solid;">CUST REF NO</td>
+                                            <td style="border:1px solid;"><span t-field="doc.partner_ref"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border:1px solid;">DATE</td>
+                                            <td style="border:1px solid;"><span t-field="doc.date_order" t-options='{"widget": "date"}'/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border:1px solid;">DELIVERY DATE</td>
+                                            <td style="border:1px solid;"><span t-field="doc.date_planned" t-options='{"widget": "date"}'/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border:1px solid;">REQUESTED BY</td>
+                                            <td style="border:1px solid;"><span t-field="doc.user_id.name"/></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="border:1px solid;">CURRENCY</td>
+                                            <td style="border:1px solid;"><span t-field="doc.currency_id.name"/></td>
+                                            
+                                        </tr>
+                                        <!-- <tr>
+                                            <td style="border:1px solid;">REMARKS</td>
+                                            <td style="border:1px solid;"><span t-field="doc.remarks"/></td>
+                                        </tr> -->
+                                    </table>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" style="padding-top:10px;">
+                                        <div style="text-align:left;">Dear Sir / Mdm</div>
+                                            <div style="text-align:left;">
+                                                We are pleased to confirm the following purchases with your company.</div>
+
+                                    </td>
+                                </tr>
+                            </table>
+                            <table width="100%" style="margin-top:13px;">
+                                <tr>
+                                    <td style="border:1px solid;text-align:center;" width="7%">No</td>
+                                    <td style="border:1px solid;text-align:center;" width="15%">STOCK CODE</td>
+                                    <td style="border:1px solid;text-align:center;" width="40%">DESCRIPTION</td>
+                                    <td style="border:1px solid;text-align:center;" width="10%">QTY</td>
+<!--                                    <td style="border:1px solid;text-align:center;" width="12%">RETAIL PRICE</td>-->
+                                    <td style="border:1px solid;text-align:center;" width="15%">UNIT COST</td>
+                                    <td style="border:1px solid;text-align:center;" width="13%">AMOUNT</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="Page">
+                            <table width="100%" height="100%" style="border:1px solid;">
+                                <t t-set="i" t-value="0"/>
+                                <t t-set="tot_qty" t-value="0"/>
+                                <t t-set="sub_total" t-value="0"/>
+                               <t t-foreach="doc.order_line" t-as="line">
+                                   <t t-set="i" t-value="i+1"/>
+                                   <t t-set="tot_qty" t-value="tot_qty+line.product_qty"/>
+                                   <t t-set="rp" t-value="0"/>
+                                   <t t-set="display_code" t-value=""/>
+                                   <t t-foreach="doc.partner_id.customer_price_list" t-as="pl">
+                                       <t t-if="pl.product_id==line.product_id">
+                                           <t t-set="rp" t-value="pl.retail_price"/>
+                                           <t t-set="display_code" t-value="pl.customer_display_code"/>
+                                       </t>
+                                   </t>
+                                   <tr height="10">
+                                        <td style="border-right:1px solid;padding-left:2px;" width="7%"><span t-esc="i"/></td>
+                                        <td style="border-right:1px solid;padding-left:2px;" width="15%"><span t-esc="display_code"/></td>
+                                        <td style="border-right:1px solid;padding-left:2px;" width="40%"><span t-field="line.name"/></td>
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="10%"><span t-esc="'{0:,.0f}'.format(line.product_qty)"/></td>
+<!--                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="12%"><span t-esc="rp"/></td>-->
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="15%"><span t-field="line.price_unit"/></td>
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="13%"><span t-field="line.price_subtotal"/></td>
+                                    </tr>
+                                </t>
+                                <tr height="30">
+                                        <td style="border-right:1px solid;padding-left:2px;" width="7%"></td>
+                                        <td style="border-right:1px solid;padding-left:2px;" width="15%"></td>
+                                        <td style="border-right:1px solid;padding-right:2px;text-align:right;" width="38%">TOTAL QTY:</td>
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="10%"><span t-esc="'{0:,.0f}'.format(tot_qty)"/></td>
+<!--                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="12%"></td>-->
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="15%"></td>
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="13%"></td>
+                                </tr>
+                            </table>
+
+                        </div>
+                        <div style="margin-top:0px !important;">
+                            <table width="100%" style="margin-top:0px;border-top:1px solid;">
+                                <tr>
+                                    <td  width="10%" style="text-align:left;"><span t-field="doc.currency_id.name"/></td>
+                                    <td  width="62%" rowspan="4" style="font-size:12px;">
+
+                                    </td>
+                                    <td style="border-left:1px solid;border-right:1px solid;text-align:left;" width="15%">SUB-TOTAL</td>
+                                    <td style="border-left:1px solid;border-right:1px solid;text-align:right;" width="13%"><span t-field="doc.amount_untaxed"/></td>
+                                </tr>
+                                <tr>
+                                    <td  width="10%" style="text-align:right;">
+                                        
+                                    </td>
+                                    <td style="border:1px solid;text-align:left;" width="15%"></td>
+                                    <td style="border:1px solid;text-align:right;" width="13%"></td>
+                                </tr>
+                                <tr>
+                                    <td  width="10%" style="text-align:right;"></td>
+                                    <td style="border:1px solid;text-align:left;" width="15%">TOTAL <span t-field="doc.currency_id.name"/></td>
+                                    <td style="border:1px solid;text-align:right;" width="13%"><span t-field="doc.amount_total"/></td>
+                                </tr>
+                                <tr>
+
+                                </tr>
+                                <tr>
+                                    <td colspan='3'>
+                                        <div>1) This Purchase Order number MUST be quoted on all invoice, delivery orders.</div>
+                                        <div style="padding-top:10px;">2) This Purchase Order MUST be attached on all invoices, delivery orders etc.</div>
+                                    </td>
+                                    <td style="text-align:center;font-weight:bold;font-size:20px;">
+                                    </td>
+                                </tr>
+                            </table>
+                            <table width="100%" style="margin-top:80px;">
+                                <tr height="10">
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+<!--                                    <td style="width:10%;">ACCOUNT</td>-->
+                                    <td >This is a computer generated document, no signature is required.</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

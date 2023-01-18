@@ -1,0 +1,36 @@
+<odoo>
+	<data>
+        <record id="purchase_order_form_inherirt" model="ir.ui.view">
+			<field name="name">purchase.order.form.view.inherirt</field>
+			<field name="model">purchase.order</field>
+			<field name="inherit_id" ref="purchase.purchase_order_form"/>
+			<field name="arch" type="xml">
+				<field name="partner_ref" position="after">
+					<field name="po_payment_status"/>
+				</field>
+                <field name="date_order" position="after">
+                    <field name="taxes_id" widget="many2many_tags"/>
+                </field>
+			</field>
+		</record>
+
+		<record id="purchase.purchase_rfq" model="ir.actions.act_window">
+			<field name="context">{
+            'group_by': 'state'
+            }
+        	</field>
+    	</record>
+
+    	<record id="purchase_order_tree_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.tree.inherit</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//tree" position="attributes">
+        			<attribute name="default_order">date_order desc</attribute>
+				</xpath>
+			</field>
+		</record>
+		
+	</data>
+</odoo>

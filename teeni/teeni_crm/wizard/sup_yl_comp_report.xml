@@ -1,0 +1,295 @@
+<odoo>
+  <data>
+    <record id="view_sup_yl_comp_report" model="ir.ui.view">
+      <field name="name">sup.yl.comp.report.wiz.form</field>
+      <field name="model">sup.yl.comp.report.wiz</field>
+      <field name="arch" type="xml">
+        <form string="Supplier Yearly Comparison Report" create="false" edit="false" save="false" discard="false">
+          <group>
+            <group>
+                <field name="supplier_id" domain="[('supplier','=',True), ('parent_id', '=', False)]" options="{'no_create':true, 'no_create_edit':true}"/>
+                <field name="from_date" />
+                <field name="to_date" />
+            </group>
+            <group>
+
+            </group>
+          </group>
+            <footer>
+<!--            <button name="run_process" string="Process" type="object" class="btn-primary" />-->
+            <button name="print_report" string="Print" type="object" class="btn-primary" />
+            <button string="Cancel" class="btn-secondary" special="cancel"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+    <record id="sup_yl_comp_paperformat_portrait" model="report.paperformat">
+      <field name="name">Supplier Yearly Comparison Report Format Portrait</field>
+      <field name="default" eval="True" />
+      <field name="format">A4</field>
+      <field name="page_height">0</field>
+      <field name="page_width">0</field>
+      <field name="orientation">Portrait</field>
+      <field name="margin_top">25</field>
+      <field name="margin_bottom">5</field>
+      <field name="margin_left">7</field>
+      <field name="margin_right">7</field>
+      <field name="header_line" eval="False" />
+      <field name="header_spacing">25</field>
+      <field name="dpi">90</field>
+    </record>
+
+    <report
+      string="Supplier Yearly Comparison Report"
+      id="action_supplier_yl_comp_report"
+      model="sup.yl.comp.report.wiz"
+      report_type="qweb-pdf"
+      name="teeni_crm.sup_yl_comp_report"
+      file="teeni_crm.sup_yl_comp_report"
+      print_report_name="'Supplier Yearly Comparison Report'"
+      paperformat="sup_yl_comp_paperformat_portrait"
+    />
+
+    <template id="sup_yl_comp_report">
+      <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+          <t t-call="web.basic_layout">
+            <div class="header">
+                <table width="100%">
+                    <tr>
+                        <td style="text-align:left;">
+<!--                                      <span t-field="company.partner_id.name"/>-->
+                            <h3>TEENI ENTERPRISE PTE LTD-09</h3>
+                            <h3><u>Purchase Comparison Report</u> In Base Currency</h3>
+                            <div>Print Order: Purchase ID </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="page">
+              <t t-set="record_collection" t-value="o.run_process()" />
+              <t t-set="FromSupplier" t-value=""/>
+              <t t-set="ToSupplier" t-value=""/>
+              <t t-set="count" t-value="-1"/>
+              <t t-foreach="record_collection" t-as="line">
+                <t t-set="count" t-value="count+1"/>
+                <t t-if="count==1">
+                    <t t-set="FromSupplier" t-value="line.supplier"/>
+                </t>
+                <t t-if="count>=1">
+                    <t t-set="ToSupplier" t-value="line.supplier"/>
+                </t>
+
+              </t>
+              <table width="100%">
+                <tr>
+                    <td>Form Purchase ID#:</td>
+                    <td><span t-esc="FromSupplier"/> </td>
+                    <td>To:</td>
+                    <td><span t-esc="ToSupplier"/></td>
+                    <td width="15%">Form Group Code:</td>
+                    <td width="8%"></td>
+                    <td width="5%">To:</td>
+                    <td width="8%"></td>
+                </tr>
+                <tr>
+                    <td>Form Purchaseperson:</td>
+                    <td></td>
+                    <td>To:</td>
+                    <td></td>
+                    <td>Form Area Code:</td>
+                    <td></td>
+                    <td>To:</td>
+                    <td></td>
+                </tr>
+              </table>
+              <table width="100%">
+                <t t-set="i" t-value="-1" />
+                <t t-set="tot_profit" t-value="0"/>
+                <t t-set="isone" t-value="False"/>
+                <t t-set="istwo" t-value="False"/>
+                <t t-set="isthree" t-value="False"/>
+                <t t-set="isfour" t-value="False"/>
+                <t t-set="isfive" t-value="False"/>
+                <t t-set="issix" t-value="False"/>
+                <t t-set="isseven" t-value="False"/>
+                <t t-set="iseight" t-value="False"/>
+                <t t-set="isnine" t-value="False"/>
+                <t t-set="isten" t-value="False"/>
+
+                <t t-set="one_total" t-value="0"/>
+                <t t-set="two_total" t-value="0"/>
+                <t t-set="three_total" t-value="0"/>
+                <t t-set="four_total" t-value="0"/>
+                <t t-set="five_total" t-value="0"/>
+                <t t-set="six_total" t-value="0"/>
+                <t t-set="seven_total" t-value="0"/>
+                <t t-set="eight_total" t-value="0"/>
+                <t t-set="nine_total" t-value="0"/>
+                <t t-set="ten_total" t-value="0"/>
+
+                <tr t-foreach="record_collection" t-as="line">
+                  <t t-set="i" t-value="i+1" />
+                  <t t-if="i==0">
+                    <td style="font-weight:bold;border:1px solid;text-align:center;">No</td>
+                    <td colspan="2" style="font-weight:bold;border:1px solid;text-align:center;"><span t-field="line.supplier" /></td>
+                    <td t-if="line.one" style="font-weight:bold;border:1px solid;text-align:center;">
+                        <t t-set="isone" t-value="True"/>
+                        <span t-esc="'%.0f'% line.one" />
+                    </td>
+                    <td t-if="line.two" style="font-weight:bold;border:1px solid;text-align:center;">
+                        <t t-set="istwo" t-value="True"/>
+                        <span t-esc="'%.0f'% line.two" />
+                    </td>
+                    <td t-if="line.three" style="font-weight:bold;border:1px solid;text-align:center;">
+                        <t t-set="isthree" t-value="True"/>
+                        <span t-esc="'%.0f'% line.three" />
+                    </td>
+                    <td t-if="line.four" style="font-weight:bold;border:1px solid;text-align:center;">
+                        <t t-set="isfour" t-value="True"/>
+                        <span t-esc="'%.0f'% line.four" />
+                    </td>
+                    <td t-if="line.five" style="font-weight:bold;border:1px solid;text-align:center;">
+                        <t t-set="isfive" t-value="True"/>
+                        <span t-esc="'%.0f'% line.five" />
+                    </td>
+                    <td t-if="line.six" style="font-weight:bold;border:1px solid;text-align:center;">
+                        <t t-set="issix" t-value="True"/>
+                        <span t-esc="'%.0f'% line.six" />
+                    </td>
+                    <td t-if="line.seven" style="font-weight:bold;border:1px solid;text-align:center;">
+                        <t t-set="isseven" t-value="True"/>
+                        <span t-esc="'%.0f'% line.seven" />
+                    </td>
+                    <td t-if="line.eight" style="font-weight:bold;border:1px solid;text-align:center;">
+                        <t t-set="iseight" t-value="True"/>
+                        <span t-esc="'%.0f'% line.eight" />
+                    </td>
+                    <td t-if="line.nine" style="font-weight:bold;border:1px solid;text-align:center;">
+                        <t t-set="isnine" t-value="True"/>
+                        <span t-esc="'%.0f'% line.nine" />
+                    </td>
+                    <td t-if="line.ten" style="font-weight:bold;border:1px solid;text-align:center;">
+                        <t t-set="isten" t-value="True"/>
+                        <span t-esc="'%.0f'% line.ten" />
+                    </td>
+                   <td style="font-weight:bold;border:1px solid;text-align:center;">
+                       Total Purchase
+                   </td>
+                  </t>
+                  <t t-if="i>0">
+                    <t t-set="line_total" t-value="0"/>
+                    <td style="border:1px solid;text-align:center;"><span t-esc="i" /></td>
+                    <td style="border:1px solid;border-right:0px;text-align:center;"><span t-field="line.currency" /></td>
+                    <td style="border:1px solid;border-left:0px;padding-left:1px;"><span t-field="line.supplier" /></td>
+                    <td t-if="isone" style="border:1px solid;text-align:right;">
+                      <t t-set="line_total" t-value="line_total+line.one"/>
+                      <t t-set="one_total" t-value="one_total+line.one"/>
+                      <span t-field="line.one" />
+                    </td>
+                    <td t-if="istwo" style="border:1px solid;text-align:right;">
+                      <t t-set="line_total" t-value="line_total+line.two"/>
+                      <t t-set="two_total" t-value="two_total+line.two"/>
+                      <span t-field="line.two" />
+                    </td>
+                    <td t-if="isthree" style="border:1px solid;text-align:right;">
+                      <t t-set="line_total" t-value="line_total+line.three"/>
+                      <t t-set="three_total" t-value="three_total+line.three"/>
+                      <span t-field="line.three" />
+                    </td>
+                    <td t-if="isfour" style="border:1px solid;text-align:right;">
+                      <t t-set="line_total" t-value="line_total+line.four"/>
+                      <t t-set="four_total" t-value="four_total+line.four"/>
+                      <span t-field="line.four" />
+                    </td>
+                    <td t-if="isfive" style="border:1px solid;text-align:right;">
+                      <t t-set="line_total" t-value="line_total+line.five"/>
+                      <t t-set="five_total" t-value="five_total+line.five"/>
+                      <span t-field="line.five" />
+                    </td>
+                    <td t-if="issix" style="border:1px solid;text-align:right;">
+                      <t t-set="line_total" t-value="line_total+line.six"/>
+                      <t t-set="six_total" t-value="six_total+line.six"/>
+                      <span t-field="line.six" />
+                    </td>
+                    <td t-if="isseven" style="border:1px solid;text-align:right;">
+                      <t t-set="line_total" t-value="line_total+line.seven"/>
+                      <t t-set="seven_total" t-value="seven_total+line.seven"/>
+                      <span t-field="line.seven" />
+                    </td>
+                    <td t-if="iseight" style="border:1px solid;text-align:right;">
+                      <t t-set="line_total" t-value="line_total+line.eight"/>
+                      <t t-set="eight_total" t-value="eight_total+line.eight"/>
+                      <span t-field="line.eight" />
+                    </td>
+                    <td t-if="isnine" style="border:1px solid;text-align:right;">
+                      <t t-set="line_total" t-value="line_total+line.nine"/>
+                      <t t-set="nine_total" t-value="nine_total+line.nine"/>
+                      <span t-field="line.nine" />
+                    </td>
+                    <td t-if="isten" style="border:1px solid;text-align:right;">
+                      <t t-set="line_total" t-value="line_total+line.ten"/>
+                      <t t-set="ten_total" t-value="four_total+line.ten"/>
+                      <span t-field="line.ten" />
+                    </td>
+                    <td style="border:1px solid;text-align:right;">
+                      <span t-esc="line_total" />
+                    </td>
+                  </t>
+                </tr>
+                <tr>
+                  <td style="border:1px solid;text-align:center;"></td>
+                      <td style="border:1px solid;border-right:0px;text-align:center;"></td>
+                      <td style="border:1px solid;border-left:0px;padding-right:2px;text-align:right;">Grand Total</td>
+                      <td t-if="isone" style="border:1px solid;text-align:right;">
+                          <span t-esc="one_total" />
+                      </td>
+                      <td t-if="istwo" style="border:1px solid;text-align:right;">
+                          <span t-esc="two_total" />
+                      </td>
+                      <td t-if="isthree" style="border:1px solid;text-align:right;">
+                          <span t-esc="three_total" />
+                      </td>
+                      <td t-if="isfour" style="border:1px solid;text-align:right;">
+                          <span t-esc="four_total" />
+                      </td>
+                      <td t-if="isfive" style="border:1px solid;text-align:right;">
+                          <span t-esc="five_total" />
+                      </td>
+                      <td t-if="issix" style="border:1px solid;text-align:right;">
+                          <span t-esc="six_total" />
+                      </td>
+                      <td t-if="isseven" style="border:1px solid;text-align:right;">
+                          <span t-esc="seven_total" />
+                      </td>
+                      <td t-if="iseight" style="border:1px solid;text-align:right;">
+                          <span t-esc="eight_total" />
+                      </td>
+                      <td t-if="isnine" style="border:1px solid;text-align:right;">
+                          <span t-esc="nine_total" />
+                      </td>
+                      <td t-if="isten" style="border:1px solid;text-align:right;">
+                          <span t-esc="ten_total" />
+                      </td>
+
+                      <td style="border:1px solid;text-align:right;">
+                          <span t-esc="one_total+two_total+three_total+four_total+five_total+six_total+seven_total+eight_total+nine_total+ten_total" />
+                      </td>
+                  </tr>
+                </table>
+              </div>
+            </t>
+          </t>
+        </t>
+      </template>
+    <record id="action_sup_yl_comp_report" model="ir.actions.act_window">
+      <field name="name">Purchase Yearly Comparison Report</field>
+      <field name="res_model">sup.yl.comp.report.wiz</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+      <field name="view_id" ref="view_sup_yl_comp_report" />
+    </record>
+    <menuitem id="menu_item_sup_yl_comp_report" name="Purchase Yearly Comparison Report" parent="purchase.menu_procurement_management"  action="action_sup_yl_comp_report"/>
+  </data>
+</odoo>

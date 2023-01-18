@@ -1,0 +1,488 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+      <record id="do_valdity" model="ir.cron">
+        <field name="name">Check Valdity Date to Send Email</field>
+        <field name="model_id" ref="model_sale_order"/>
+        <field name="state">code</field>
+        <field name="code">model.check_validty()</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+    </record>
+
+    <record id="view_partner_form_inherit_pl" model="ir.ui.view">
+            <field name="name">res.partner.form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form" position="inside">
+                    <header>
+                        <button name="update_area" string="Update Area" type="object" class="oe_highlight"/>
+                    </header>
+                </xpath>
+                <field name="parent_id" position="after">
+                    <field name="store_code" placeholder="Store Code" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
+                    <field name="sales_person" placeholder="Sales Person" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
+                    <field name="destination_id" placeholder="Destination ID"/>
+                </field>
+                <field name="vat" position="before">
+                    <field name="area_id"/>
+                    <field name="district_no"/>
+                    <field name="store_address_1" string="Store Address 1" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
+                    <field name="store_address_2" string="Store Address 2" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
+                    <field name="store_address_3" string="Store Address 3" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
+                    <field name="store_address_4" string="Store Address 4" attrs="{'invisible': ['|', '&amp;', ('is_company','=', True),('parent_id', '=', False),('company_name', '!=', False),('company_name', '!=', '')]}"/>
+                    <field name="teeni_supplier_id" attrs="{'invisible':['|', ('is_company','!=', True), ('customer','=',True)]}"/>
+                    <field name="teeni_customer_id" attrs="{'invisible':['|',('is_company','!=', True),('supplier','=',True)]}"/>
+                    <field name="supplier_group_code" attrs="{'invisible':['|',('customer','=',True),('is_company','!=', True)]}"/>
+                    <field name="supplier_area_code" attrs="{'invisible':['|',('customer','=',True),('is_company','!=', True)]}"/>
+                    <field name="customer_group_code" attrs="{'invisible':['|',('supplier','=',True),('is_company','!=', True)]}"/>
+                    <field name="customer_area_code" attrs="{'invisible':['|',('supplier','=',True),('is_company','!=', True)]}"/>
+                    <field name="grn_no" attrs="{'invisible':[('is_company','!=', True)]}"/>
+                </field>
+                <xpath expr="//page[1]/field[@name='child_ids']/form/sheet/group/group[2]//field[@name='name']" position="before">
+                    <field name="store_code"/>
+                    <field name="sales_person"/>
+                    <field name="destination_id"/>
+                </xpath>
+                <xpath expr="//page[1]/field[@name='child_ids']/form/sheet/group/group[2]//field[@name='email']" position="before">
+                    <field name="area_id"/>
+                    <field name="district_no"/>
+                    <field name="store_address_1" string=" Address 1"/>
+                    <field name="store_address_2" string=" Address 2"/>
+                    <field name="store_address_3" string=" Address 3"/>
+                    <field name="store_address_4" string=" Address 4"/>
+
+                    <field name="is_fixed_day_schedule"/>
+                    <field name="monday" attrs="{'invisible':[('is_fixed_day_schedule', '!=', True)]}"/>
+                    <field name="tuesday" attrs="{'invisible':[('is_fixed_day_schedule', '!=', True)]}"/>
+                    <field name="wednessday" attrs="{'invisible':[('is_fixed_day_schedule', '!=', True)]}"/>
+                    <field name="thursday" attrs="{'invisible':[('is_fixed_day_schedule', '!=', True)]}"/>
+                    <field name="friday" attrs="{'invisible':[('is_fixed_day_schedule', '!=', True)]}"/>
+
+                </xpath>
+
+                <field name="property_payment_term_id" position="after">
+                    <field name="po_expiry_days"/>
+                    <field name="po_term_id" />
+                </field>
+
+                <xpath expr="//notebook[1]" position="inside">
+                    <page name="customer_price_list" string="Price List">
+                        <field name="customer_price_list">
+                            <tree editable="bottom">
+                                <field name="partner_id" invisible="1"/>
+                                <field name="product_id"/>
+                                <field name="customer_display_code"/>
+                                <field name="product_display_name"/>
+                                <field name="unit_price" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+                                <field name="retail_price"/>
+                                <field name="currency_id"/>
+                                <field name="remarks"/>
+                            </tree>
+                        </field>
+                    </page>
+                </xpath>
+
+                <field name="category_id" position="after">
+                    <field name="is_fixed_day_schedule"/>
+                    <field name="monday" attrs="{'invisible':[('is_fixed_day_schedule', '!=', True)]}"/>
+                    <field name="tuesday" attrs="{'invisible':[('is_fixed_day_schedule', '!=', True)]}"/>
+                    <field name="wednessday" attrs="{'invisible':[('is_fixed_day_schedule', '!=', True)]}"/>
+                    <field name="thursday" attrs="{'invisible':[('is_fixed_day_schedule', '!=', True)]}"/>
+                    <field name="friday" attrs="{'invisible':[('is_fixed_day_schedule', '!=', True)]}"/>
+
+                </field>
+
+            </field>
+    </record>
+
+<!--      <record id="view_order_form_inherit" model="ir.ui.view">-->
+<!--            <field name="name">sale.order.form.inherit</field>-->
+<!--            <field name="model">sale.order</field>-->
+<!--&lt;!&ndash;            <field eval="100" name="priority"/>&ndash;&gt;-->
+<!--            <field name="inherit_id" ref="sale.view_order_form"/>-->
+<!--            <field name="arch" type="xml">-->
+<!--                <xpath expr="//field[@name='validity_date']" position="attributes">-->
+<!--                    <attribute name="required">1</attribute>-->
+<!--                </xpath>-->
+<!--                <xpath expr="/form/header" position="inside">-->
+<!--                    <button name="action_request_revise"-->
+<!--                        string="Revised" type="object" class="oe_highlight"-->
+<!--                        />-->
+<!--                </xpath>-->
+<!--&lt;!&ndash;                attrs="{'invisible': [('state', 'not in', ['sale'])]}"&ndash;&gt;-->
+<!--              <xpath expr="//field[@name='payment_term_id']" position="after">-->
+<!--                    <field name="previous_so" invisible="1"/>-->
+<!--                    <field name="so_previous" invisible="1" />-->
+<!--              </xpath>-->
+<!--            </field>-->
+<!--      </record>-->
+<!--        <record id="sale.action_quotations" model="ir.actions.act_window">-->
+<!--            <field name="name">Customer PO</field>-->
+<!--        </record>-->
+
+      <record id="sale.action_quotations_with_onboarding" model="ir.actions.act_window">
+        <field name="context">{
+            'search_default_my_quotation': 1,
+            'group_by': 'state'
+            }
+        </field>
+        <field name="name">Customer PO</field>
+      </record>
+<!--      <menuitem id="sale.menu_sale_quotations"-->
+<!--        name="Customer PO"-->
+<!--      />-->
+<!--      <menuitem id="sale.menu_sale_order"-->
+<!--        groups="base.group_no_one"-->
+<!--      />-->
+      <menuitem id="sale_hidden_menu"
+            name="Order"
+            parent="sale.sale_menu_root"
+            sequence="6" groups="base.group_no_one"/>
+
+      <menuitem id="sale.menu_sale_order"
+            name="Orders"
+            action="sale.action_orders"
+            parent="sale_hidden_menu"
+            sequence="2" groups="base.group_no_one"/>
+
+    <record id="view_res_partner_filter_inherit" model="ir.ui.view">
+            <field name="name">res.partner.select</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_res_partner_filter"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="store_code"/>
+                </field>
+            </field>
+    </record>
+
+      <record id="view_order_form_inherit" model="ir.ui.view">
+            <field name="name">sale.order.form.inherit</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <field name="pricelist_id" position="replace">
+                    <field name="pricelist_id" required="0" invisible="0" groups="product.group_sale_pricelist"/>
+                    <field name="taxes_id"  widget="many2many_tags"/>
+                </field>
+                <field name="payment_term_id" position="after">
+                    <field name="cus_po_num"/>
+                    <field name="po_term_id"/>
+                    <field name="teeni_delivery_date"/>
+                </field>
+<!--                <xpath expr="//field[@name='order_line']//tree/field[@name='product_id']" position="attributes">-->
+<!--                    <attribute name="domain">[('product_id','in',partner_id.customer_price_list.product_id)]</attribute>-->
+<!--                </xpath>-->
+                <xpath expr="//field[@name='order_line']//tree/field[@name='name']" position="attributes">
+                        <attribute name="invisible">1</attribute>
+<!--                    <attribute name="string">Display Name</attribute>-->
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree/field[@name='name']" position="before">
+<!--                    <field name="order_id"/>-->
+<!--                    <field name="customer_display_code" domain="[('partner_id', 'in', order_id.partner_id.id)]"/>-->
+                    <field name="partner_id" invisible="1"/>
+                    <field name="customer_display_code" string="Display Code &amp; Name" domain="[('partner_id', '=', partner_id)]"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree/field[@name='product_uom_qty']" position="attributes">
+                    <attribute name="sum">Total</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree/field[@name='qty_delivered']" position="attributes">
+                    <attribute name="sum">Total</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree/field[@name='qty_invoiced']" position="attributes">
+                    <attribute name="sum">Total</attribute>
+                </xpath>
+                <xpath expr="//field[@name='order_line']//tree/field[@name='price_unit']" position="after">
+                    <field name="currency_id"/>
+                    <field name="price_list_price" force_save="1" widget="monetary" options="{'currency_field': 'price_list_currency_id'}"/>
+                    <field name="price_list_currency_id" string="Price List Currency" readonly="1" force_save="1"/>
+                </xpath>
+                <field name="partner_id" position="attributes">
+                    <attribute name="domain">[('customer','=',True),('parent_id','=',False)]</attribute>
+                </field>
+                <field name="partner_invoice_id" position="attributes">
+                    <attribute name="domain">['|',('id','=',partner_id),('parent_id','=',partner_id)]</attribute>
+                </field>
+                <xpath expr="//field[@name='partner_shipping_id']" position="attributes">
+                    <attribute name="domain">['|',('id','=',partner_id),('parent_id','=',partner_id)]</attribute>
+                </xpath>
+<!--                <xpath expr="//field[@name='validity_date']" position="attributes">-->
+<!--                    <attribute name="required">1</attribute>-->
+<!--                    <attribute name="invisible">0</attribute>-->
+<!--                </xpath>-->
+                <field name="validity_date" position="replace">
+                    <field name="validity_date" required="1"/>
+                </field>
+                <field name="confirmation_date" position="replace">
+                    <field name="confirmation_date" widget="date"/>
+                </field>
+                <field name="pricelist_id" position="replace">
+                    <field name="pricelist_id" string="Currency" groups="product.group_sale_pricelist"/>
+                </field>
+                <field name="state" position="replace">
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sale"/>
+                </field>
+                <xpath expr="/form/header" position="inside">
+                    <button name="action_request_revise"
+                        string="Revised" type="object" class="oe_highlight"
+                        attrs="{'invisible': [('state', 'not in', ['sale'])]}"/>
+                </xpath>
+                <xpath expr="//form//header//button[@name='action_confirm'][2]" position="attributes">
+                    <attribute name="string">Create DO</attribute>
+                </xpath>
+<!--                <xpath expr="//form/header//button[@name='action_confirm']" position="attributes">-->
+<!--                    <attribute name="string">Create DO</attribute>-->
+<!--                </xpath>-->
+<!--                -->
+                  <xpath expr="//field[@name='payment_term_id']" position="after">
+                        <field name="previous_so" invisible="1"/>
+                        <field name="so_previous" invisible="1" />
+                  </xpath>
+
+                <field name="amount_total" position="after">
+                    <field name="base_currency_id" invisible="1" readonly="1"/>
+                    <field name="total_in_base_currency" readonly="1" force_save="1" widget="monetary" options="{'currency_field': 'base_currency_id'}"/>
+                </field>
+            </field>
+      </record>
+
+    <record id="view_quotation_tree_inherit" model="ir.ui.view">
+        <field name="name">sale.order.tree</field>
+        <field name="model">sale.order</field>
+        <field name="priority">4</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="cus_po_num" string="Customer PO No"/>
+            </field>
+            <field name="date_order" position="replace">
+                <field name="date_order" widget="date" string="PO Date"/>
+                <field name="teeni_delivery_date"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="sale_order_view_search_inherit_quotation_teeni" model="ir.ui.view">
+        <field name="name">sale.order.view.search.inherit.quotation</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.sale_order_view_search_inherit_quotation"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="cus_po_num"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="invoice_tree_inherit" model="ir.ui.view">
+        <field name="name">account.invoice.tree.inherit</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='partner_id']" position="after">
+                <field name="cus_po_number"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_invoice_filter_inherit" model="ir.ui.view">
+        <field name="name">view.account.invoice.filter.inherit</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.view_account_invoice_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='number']" position="after">
+                <field name="cus_po_number"/>
+            </xpath>
+        </field>
+    </record>
+
+      <record id="invoice_form_inherit_asim" model="ir.ui.view">
+        <field name="name">account.invoice.form</field>
+        <field name="model">account.invoice</field>
+       <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="print_preview" type="object" string="Print Preview" class="oe_highlight"/>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']//tree/field[@name='name']" position="attributes">
+                <attribute name="string">Display Name</attribute>
+            </xpath>
+            <xpath expr="//field[@name='invoice_line_ids']//tree/field[@name='quantity']" position="attributes">
+                <attribute name="sum">Total</attribute>
+            </xpath>
+            <field name="payment_term_id" position="after">
+                <field name="return_no" attrs="{'invisible':[('type','!=','out_refund')]}"/>
+                <field name="return_remarks" string="Remarks" attrs="{'invisible':[('type','!=','out_refund')]}"/>
+            </field>
+            <field name="amount_total" position="after">
+                    <field name="base_currency_id" invisible="1" readonly="1"/>
+                    <field name="total_in_base_currency" readonly="1" force_save="1" widget="monetary" options="{'currency_field': 'base_currency_id'}"/>
+                </field>
+        </field>
+     </record>
+
+      <record id="view_customer_price_list_tree" model="ir.ui.view">
+            <field name="name">teeni.customer.price.list.tree</field>
+            <field name="model">teeni.customer.price.list</field>
+            <field name="priority">4</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="partner_id" string="Customer"/>
+                    <field name="product_id"/>
+                    <field name="customer_display_code" string="Customer Display Code"/>
+                    <field name="product_display_name" string="Customer Display Name"/>
+                    <field name="unit_price"/>
+                    <field name="retail_price"/>
+                    <field name="currency_id"/>
+                </tree>
+            </field>
+      </record>
+      <record id="customer_price_list_search_view" model="ir.ui.view">
+            <field name="name">teeni.customer.price.list.tree</field>
+            <field name="model">teeni.customer.price.list</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="partner_id" string="Customer"/>
+                    <field name="product_id"/>
+                    <field name="customer_display_code" string="Customer Display Code"/>
+                    <field name="product_display_name" string="Customer Display Name"/>
+                    <field name="unit_price"/>
+                    <field name="retail_price"/>
+                    <field name="currency_id"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Customer" name="partner_id" domain="[]" context="{'group_by':'partner_id'}"/>
+                        <filter name="product_id" string="Product" domain="[]" context="{'group_by':'product_id'}"/>
+                    </group>
+                </search>
+
+            </field>
+      </record>
+
+    <record model="ir.ui.view" id="teeni_po_term_form">
+            <field name="name">teeni.po.term.form</field>
+            <field name="model">teeni.po.term</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="PO Term">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="note"/>
+                            <field name="days"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+    </record>
+
+    <record id="view_teeni_po_term_tree" model="ir.ui.view">
+            <field name="name">po.term.tree</field>
+            <field name="model">teeni.po.term</field>
+            <field name="priority">4</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="note"/>
+                    <field name="days"/>
+                </tree>
+            </field>
+      </record>
+
+      <record id="teeni_po_term_search_view" model="ir.ui.view">
+            <field name="name">teeni.po.term.tree</field>
+            <field name="model">teeni.po.term</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="note"/>
+                    <field name="days"/>
+                    <group expand="0" string="Group By">
+                        <filter string="name" name="Name" domain="[]" context="{'group_by':'name'}"/>
+                        <filter name="days" string="Days" domain="[]" context="{'group_by':'days'}"/>
+                    </group>
+                </search>
+            </field>
+      </record>
+
+      <record id="inherit_invoice_form_ali" model="ir.ui.view">
+           <field name="name">account.invoice.order.form.ali</field>
+           <field name="model">account.invoice</field>
+           <field name="inherit_id" ref="account.invoice_form"/>
+           <field name="arch" type="xml">
+               <xpath expr="//field[@name='date_invoice']" position="after">
+                    <field name="salesoption" required='1'/>
+               </xpath>
+           </field>
+       </record>
+
+
+      <record model="ir.actions.act_window" id="action_customer_price_list">
+        <field name="name">Customer Price List</field>
+        <field name="res_model">teeni.customer.price.list</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+      </record>
+
+      <record model="ir.actions.act_window" id="action_teeni_po_term">
+        <field name="name">PO Terms</field>
+        <field name="res_model">teeni.po.term</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+      </record>
+
+      <record id="view_picking_form_inherit_teeni_crm" model="ir.ui.view">
+        <field name="name">stock.picking.form</field>
+        <field name="model">stock.picking</field>
+        <field eval="12" name="priority"/>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <field name="origin" position="after">
+                <field name="packer_id" widget="many2many_tags"/>
+            </field>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="packer_wizard_form">
+            <field name="name">teeni.packer_wizard.form</field>
+            <field name="model">teeni.packer_wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Packer Name">
+                <group>
+                    <field name="packer_id" widget="many2many_tags"/>
+                    <field name="delivery_date" string="Delivery Date for Packer"/>
+                    <field name="assigned_delivery_date" />
+                    <field name="message" style="color:red;"/>
+                </group>
+                    <footer>
+                        <button class="oe_highlight" name="submit" string="Submit" type="object"/>
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+    </record>
+
+    <record id="message_wizard_form" model="ir.ui.view">
+        <field name="name">message.wizard.form</field>
+        <field name="model">message.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                <p class="text-center">
+                    <field name="message"/>
+                </p>
+                </group>
+            <footer>
+                <button name="action_ok" string="Ok" type="object" default_focus="1" class="oe_highlight"/>
+            </footer>
+            </form>
+        </field>
+    </record>
+
+    <menuitem id="menu_action_teeni_po_term" name="PO Term" parent="sale.product_menu_catalog" action="action_teeni_po_term"/>
+
+      <menuitem id="menu_action_customer_price_list" name="Customer Price List" parent="sale.product_menu_catalog" action="action_customer_price_list"/>
+      <menuitem id="menu_action_product_customer_price_list" name="Customer Price List" parent="stock.menu_stock_inventory_control" action="action_customer_price_list"/>
+  </data>
+</openerp>

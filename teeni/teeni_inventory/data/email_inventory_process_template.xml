@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="email_packer_submit_template" model="mail.template">
+            <field name="name">Internal Transfer Request Submitted</field>
+            <field name="email_from">${user.login}</field>
+            <field name="subject">${ctx['subject']}</field>
+            <field name="lang">${object.lang}</field>
+            <field name="email_to">ruyin@teeni.com.sg,lkseah@teeni.com.sg</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="body_html"><![CDATA[
+                <p>Dear Manager,</p>
+                <p>There is a request for Internal Transfer by <b>${user.partner_id.name}</b>.</p>
+                <p>Please review it in the Inventory Module.</p>
+                <p>Best regard,</p>
+            ]]>
+            </field>
+       </record>
+
+       <record id="email_packer_confirm_template" model="mail.template">
+            <field name="name">Internal Transfer Request Confirm Recevied</field>
+            <field name="email_from">${user.login}</field>
+            <field name="subject">${ctx['subject']}</field>
+            <field name="lang">${object.lang}</field>
+            <field name="email_to">ruyin@teeni.com.sg,lkseah@teeni.com.sg</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="body_html"><![CDATA[
+                <p>Dear Manager,</p>
+                <p>The Internal Transfer <b>${object.name}</b> have been confirm recevied by <b>${user.partner_id.name}</b>.</p>
+                <p>Please review it in the Inventory Module.</p>
+                <p>Best regard,</p>
+            ]]>
+            </field>
+       </record>
+
+       <record id="email_pick_packer_submit_template" model="mail.template">
+            <field name="name">Pick Request Submitted</field>
+            <field name="email_from">${user.login}</field>
+            <field name="subject">${ctx['subject']}</field>
+            <field name="lang">${object.lang}</field>
+            <field name="email_to">scng@teeni.com.sg</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="body_html"><![CDATA[
+                <p>Dear Logistic Assistant,</p>
+                <p>There is a package that have been picked by <b>${user.partner_id.name}</b>.</p>
+                <p>Please review it in the Inventory App.</p>
+                <p>Best regard,</p>
+            ]]>
+            </field>
+       </record>
+
+       <record id="manager_approved_template" model="mail.template">
+            <field name="name">Internal Transfer Request Approved</field>
+            <field name="email_from">${user.login}</field>
+            <field name="subject">${ctx['subject']}</field>
+            <field name="lang">${object.lang}</field>
+            <field name="email_to">lgx-whse1@teeni.com.sg, lgx-whse2@teeni.com.sg</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="body_html"><![CDATA[
+                <p>Dear WH Assistant,</p>
+                <p>There is a request for Internal Transfer that have been approved by <b>${user.partner_id.name}</b>.</p>
+                <p>Please review it in the Inventory Module.</p>
+                <p>Best regard,</p>
+            ]]>
+            </field>
+       </record>
+       <record id="wh_assist_processed_template" model="mail.template">
+            <field name="name">Internal Transfer Request Processed</field>
+            <field name="email_from">${user.login}</field>
+            <field name="subject">${ctx['subject']}</field>
+            <field name="lang">${object.lang}</field>
+            <field name="email_to">lgx-store1@teeni.com.sg, lgx-store2@teeni.com.sg, lgx-store3@teeni.com.sg</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="body_html"><![CDATA[
+                <p>Dear Packers,</p>
+                <p>There is a request for Internal Transfer that have been processed by <b>${user.partner_id.name}</b>.</p>
+                <p>Please review it in the Inventory Module.</p>
+                <p>Best regard,</p>
+            ]]>
+            </field>
+       </record>
+
+       <record id="wh_assist_verify_template" model="mail.template">
+            <field name="name">Receipt Verified</field>
+            <field name="email_from">${user.login}</field>
+            <field name="subject">${ctx['subject']}</field>
+            <field name="lang">${object.lang}</field>
+            <field name="email_to">lgx-store1@teeni.com.sg, lgx-store2@teeni.com.sg, lgx-store3@teeni.com.sg</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="body_html"><![CDATA[
+                <p>Dear Packers,</p>
+                <p>There is a request for Receipt that have been processed by <b>${user.partner_id.name}</b>.</p>
+                <p>Please review it in the Inventory Module.</p>
+                <p>Best regard,</p>
+            ]]>
+            </field>
+       </record>
+
+       <record id="log_assist_verify_template" model="mail.template">
+            <field name="name">DO Verified</field>
+            <field name="email_from">${user.login}</field>
+            <field name="subject">${ctx['subject']}</field>
+            <field name="lang">${object.lang}</field>
+            <field name="email_to">lgx-delivery1@teeni.com.sg, lgx-delivery2@teeni.com.sg</field>
+            <field name="model_id" ref="stock.model_stock_picking"/>
+            <field name="body_html"><![CDATA[
+                <p>Dear Driver,</p>
+                <p>There is a Delivery Order that have been verified by <b>${user.partner_id.name}</b>.</p>
+                <p>Please review it in the Inventory App.</p>
+                <p>Best regard,</p>
+            ]]>
+            </field>
+       </record>
+    </data>
+</odoo>

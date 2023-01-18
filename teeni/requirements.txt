@@ -1,0 +1,7 @@
+# required external dependencies for our
+#pip3
+invoice2data==0.3.5
+#apt
+poppler-utils
+imagemagick
+tesseract-ocr

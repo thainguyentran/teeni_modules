@@ -1,0 +1,128 @@
+<odoo>
+  <data>
+    <record id="view_sup_sum_purchase_report" model="ir.ui.view">
+      <field name="name">sup.sum.purchase.report.wiz.form</field>
+      <field name="model">sup.sum.purchase.report.wiz</field>
+      <field name="arch" type="xml">
+        <form string="Supplier Summarised Purchase Report" create="false" edit="false" save="false" discard="false">
+          <group>
+            <group>
+                <field name="supplier_id" domain="[('supplier','=',True), ('parent_id', '=', False)]" options="{'no_create':true, 'no_create_edit':true}"/>
+                <field name="teeni_supplier_id" />
+                <field name="group_code"/>
+                <field name="area_code" />
+                <field name="from_date" />
+                <field name="to_date" />
+            </group>
+            <group>
+
+            </group>
+          </group>
+            <footer>
+<!--            <button name="run_process" string="Process" type="object" class="btn-primary" />-->
+            <button name="print_report" string="Print" type="object" class="btn-primary" />
+            <button string="Cancel" class="btn-secondary" special="cancel"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+    <record id="sup_sum_purchase_paperformat_portrait" model="report.paperformat">
+      <field name="name">Supplier Sum Purchase Report Format Landscape</field>
+      <field name="default" eval="True" />
+      <field name="format">A4</field>
+      <field name="page_height">0</field>
+      <field name="page_width">0</field>
+      <field name="orientation">Landscape</field>
+      <field name="margin_top">25</field>
+      <field name="margin_bottom">5</field>
+      <field name="margin_left">7</field>
+      <field name="margin_right">7</field>
+      <field name="header_line" eval="False" />
+      <field name="header_spacing">25</field>
+      <field name="dpi">90</field>
+    </record>
+
+    <report
+      string="Supplier Summarised Purchase Report"
+      id="action_supplier_sum_purchase_report"
+      model="sup.sum.purchase.report.wiz"
+      report_type="qweb-pdf"
+      name="teeni_crm.supplier_sum_purchase_report"
+      file="teeni_crm.supplier_sum_purchase_report"
+      print_report_name="'Supplier Summarised Purchase Report'"
+      paperformat="sup_sum_purchase_paperformat_portrait"
+    />
+
+    <template id="supplier_sum_purchase_report">
+      <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+          <t t-call="web.basic_layout">
+            <table width="100%">
+              <tr>
+                <td style="text-align:left;">
+                    <h3>TEENI ENTERPRISE PTE LTD-09</h3>
+                    <h3><u>Supplier Summarised Purchases Report</u></h3>
+                    <div>Print Order: Supplier ID </div>
+                </td>
+              </tr>
+              <tr>
+                <td>From Supplier ID#: <span t-field="o.supplier_id"/></td>
+                <td>To: <span t-field="o.supplier_id"/></td>
+                <td>From Group Code: <span t-field="o.group_code"/></td>
+                <td>To: <span t-field="o.group_code"/></td>
+                <td>From Area Code: <span t-field="o.area_code"/></td>
+                <td>To: <span t-field="o.area_code"/></td>
+                <td>From date: <span t-field="o.from_date"/></td>
+                <td>To date: <span t-field="o.to_date"/></td>
+              </tr>
+            </table>
+            <t t-set="record_collection" t-value="o.run_process()" />
+            <table width="100%">
+              <tr>
+                  <th style="border-top:1px solid; border-bottom:1px solid;text-align:left;"><strong>Item#</strong></th>
+                  <th style="border-top:1px solid; border-bottom:1px solid;text-align:left;"><strong>Supplier ID</strong></th>
+                  <th style="border-top:1px solid; border-bottom:1px solid;text-align:left;"><strong>Name</strong></th>
+                  <th style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Term</strong></th>
+                  <th style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Curr.$</strong></th>
+                  <th style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Foreign Amt</strong></th>
+                  <th style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Base Amt</strong></th>
+              </tr>
+              <t t-set="i" t-value="0" />
+              <tr t-foreach="record_collection" t-as="line">
+                <t t-set="i" t-value="i+1" />
+                <td style="text-align:left;"><span t-esc="i" /></td>
+                <td style="padding-left:1px;"><span t-field="line.supplier_id" /></td>
+                <td style="text-align:left;"><span t-field="line.supplier" /></td>
+                <td style="text-align:right;"><span t-field="line.payment_term" /></td>
+                <td style="text-align:right;"><span t-field="line.currency" /></td>
+                <td style="text-align:right;"><span t-field="line.foreign_amt" /></td>
+                <td style="text-align:right;"><span t-field="line.base_amt" /></td>
+              </tr>
+              <tr>
+                <td colspan="4"></td>
+                <td style="text-align:right;">Grand Total: </td>
+                <td colspan="2" style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><span t-field="o.grand_total" /></td>
+              </tr>
+              <tr>
+                <br/>
+                <br/>
+                <td colspan="7" style="text-align:center">
+                  <strong>---------END of REPORT---------</strong>
+                </td>
+              </tr>
+            </table>
+          </t>
+        </t>
+      </t>
+    </template>
+    <record id="action_sup_sum_purchase_report" model="ir.actions.act_window">
+      <field name="name">Supplier Sum Purchase Report</field>
+      <field name="res_model">sup.sum.purchase.report.wiz</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+      <field name="view_id" ref="view_sup_sum_purchase_report" />
+    </record>
+    <menuitem id="menu_item_sup_sum_purchase_report" name="Supplier Summarised Purchase Report" parent="purchase.menu_procurement_management"  action="action_sup_sum_purchase_report"/>
+  </data>
+</odoo>

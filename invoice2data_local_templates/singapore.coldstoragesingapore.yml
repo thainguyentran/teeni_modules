@@ -1,0 +1,34 @@
+issuer: COLD STORAGE SINGAPORE (1983) PTE LTD
+fields:
+  amount: Total Purchase Order Amount \(S\$\)\s+:\s+(\d{1,}.\d{1,})
+  date: Date of Order\s+:\s+(\d{1,2}-\w{1,3}-\d{1,4})
+  delivery_date: Delivery Date :\s+(\d{1,2}-\w{1,3}-\d{1,4})
+  invoice_number: Order No\s+:\s+(\w.+)
+  store_code: \((\w+\d{1,})\)\n
+  cus_po_num: Order No.\s+:\s+(\w.+)
+  no_of_product_ordered: Total No of Products Quantity in CTN\s+:\s+(\d+.\d{1,})
+  partner_name: Cold Storage Singapore \(1983\) Pte Ltd
+keywords:
+- TEENI
+- Cold Storage Singapore
+
+
+options:
+  currency: SGD
+  remove_whitespace: false
+  date_formats:
+    - '%dd/%mmm/%YYYY'
+  decimal_separator: '.'
+  languages:
+    - en
+  replace:
+    - ['S.No.','SNo']
+    - ['No.', 'No']
+
+lines:
+  start: 'SNo\s+No\s+Product Description\s+Size\s+OP\s+Unit Cost\s+Carton\s+Total Amount'
+  end: 'Total No of Products Ordered'
+  first_line: '^\s+(?P<SNo>\d{1,})\s+(?P<barcode>\d{1,})\s+(?P<ProductDescription>.+)\s+(?P<UOM>\w.+\w)\s+(?P<pack_qty>\d{1,})\s+(?P<Unit_Price>\d{1,}.\d{1,})\s+(?P<Qty>\d{1,})\s+(?P<Total>\d{1,}.\d{1,})'
+  line: '^\s+(?P<SNo>\d{1,})$'
+  type:
+    Total: float

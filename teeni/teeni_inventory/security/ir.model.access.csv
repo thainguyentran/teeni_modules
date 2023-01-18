@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_teeni_exp_code,teeni.exp.code,model_teeni_exp_code,,1,1,1,1
+access_bo_remaining_product,teeni.bo_remaining_product,model_bo_remaining_product,,1,1,1,1
+access_teeni_summary_picking_detail,teeni.teeni_summary_picking_detail,model_teeni_summary_picking_detail,,1,1,1,1
+access_stock_move_user,stock.move user,model_stock_move,stock.group_stock_user,1,1,1,1
+access_teeni_stock_return_picking_line,teeni.stock.return.picking.line,model_teeni_stock_return_picking_line,,1,1,1,1
+access_driver_report_lines,driver.report.lines,model_driver_report_lines,,1,1,1,1

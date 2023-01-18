@@ -1,0 +1,157 @@
+<odoo>
+  <data>
+     <record id="partner_area_form" model="ir.ui.view">
+            <field name="name">partner.area.form.view</field>
+            <field name="model">partner.area</field>
+            <field name="arch" type="xml">
+            <form>
+              <sheet>
+                  <group>
+                      <field name="district_no"/>
+                      <field name="name"/>
+                  </group>
+              </sheet>
+            </form>
+            </field>
+     </record>
+
+     <record id="partner_area_tree_view" model="ir.ui.view">
+            <field name="name">partner.area.view.tree</field>
+            <field name="model">partner.area</field>
+            <field name="arch" type="xml">
+            <tree>
+                  <field name="district_no"/>
+                  <field name="name"/>
+                  <field name="postal_code"/>
+            </tree>
+            </field>
+     </record>
+     <record model="ir.actions.act_window" id="action_partner_area">
+            <field name="name">Area</field>
+            <field name="res_model">partner.area</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+     </record>
+
+     <!-- Partner Region -->
+
+     <record id="partner_region_form" model="ir.ui.view">
+            <field name="name">partner.region.form.view</field>
+            <field name="model">partner.region</field>
+            <field name="arch" type="xml">
+            <form>
+              <sheet>
+                  <group>
+                      <group>
+                        <field name="name"/>
+                      </group>
+                      <group>
+                          <field name="max_no_of_order"/>
+                      </group>
+                  </group>
+<!--                  <group string="Delivery Day">-->
+<!--                      <field name="monday"/>-->
+<!--                      <field name="tuesday"/>-->
+<!--                      <field name="wednessday"/>-->
+<!--                      <field name="thursday"/>-->
+<!--                      <field name="friday"/>-->
+<!--                  </group>-->
+                  <notebook>
+                      <page string="Area's of Region">
+                          <field name="rec_lines">
+                              <tree editable="bottom">
+                                  <field name="partner_area_id"/>
+                                  <field name="district_no"/>
+                              </tree>
+                          </field>
+                      </page>
+                  </notebook>
+              </sheet>
+            </form>
+            </field>
+     </record>
+
+     <record id="partner_region_tree_view" model="ir.ui.view">
+            <field name="name">partner.region.view.tree</field>
+            <field name="model">partner.region</field>
+            <field name="arch" type="xml">
+            <tree>
+                  <field name="name"/>
+<!--                  <field name="monday"/>-->
+<!--                  <field name="tuesday"/>-->
+<!--                  <field name="wednessday"/>-->
+<!--                  <field name="thursday"/>-->
+<!--                  <field name="friday"/>-->
+            </tree>
+            </field>
+     </record>
+     <record model="ir.actions.act_window" id="action_partner_region">
+            <field name="name">Region</field>
+            <field name="res_model">partner.region</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+     </record>
+
+     <!-- Rotation Policy-->
+      <record id="do_rotation_policy_form" model="ir.ui.view">
+            <field name="name">do.rotation.policy.form.view</field>
+            <field name="model">do.rotation.policy</field>
+            <field name="arch" type="xml">
+            <form>
+              <sheet>
+                  <group>
+                      <group>
+                        <field name="month"/>
+                      </group>
+                      <group>
+                          <field name="year"/>
+                      </group>
+                  </group>
+                  <group>
+                      <group>
+                          <field name="start_date"/>
+                      </group>
+                      <group>
+                          <field name="region_ids" widget="many2many_tags"/>
+                      </group>
+                  </group>
+                  <notebook>
+                      <page string="Rotation Day of a Regions">
+                          <field name="rec_lines">
+                              <tree editable="bottom">
+                                  <field name="partner_region_id"/>
+                                  <field name="date"/>
+                                  <field name="day"/>
+                                  <field name="week_day"/>
+                              </tree>
+                          </field>
+                      </page>
+                  </notebook>
+              </sheet>
+            </form>
+            </field>
+     </record>
+
+     <record id="do_rotation_policy_tree_view" model="ir.ui.view">
+            <field name="name">do.rotation.policy.view.tree</field>
+            <field name="model">do.rotation.policy</field>
+            <field name="arch" type="xml">
+            <tree>
+                  <field name="month"/>
+                  <field name="year"/>
+                  <field name="start_date"/>
+            </tree>
+            </field>
+     </record>
+     <record model="ir.actions.act_window" id="action_do_rotation_policy">
+            <field name="name">DO Rotation Policy</field>
+            <field name="res_model">do.rotation.policy</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+     </record>
+
+     <menuitem id="menu_action_partner_area" name="Area" parent="contacts.res_partner_menu_config" action="action_partner_area"/>
+     <menuitem id="menu_action_partner_region" name="Region" parent="contacts.res_partner_menu_config" action="action_partner_region"/>
+     <menuitem id="menu_action_do_rotation_policy" name="DO Rotation Policy" parent="contacts.res_partner_menu_config" action="action_do_rotation_policy"/>
+  </data>
+</odoo>

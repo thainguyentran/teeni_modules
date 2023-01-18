@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="product_template_form_view_inherit" model="ir.ui.view">
+    <field name="name">product.template.form.view.inherit</field>
+    <field name="model">product.template</field>
+    <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='uom_id']" position="before">
+                    <field name="average_cost_price" string="Average Cost Price" widget='monetary' options="{'currency_field': 'cost_currency_id'}" groups="teeni_inventory.group_product_price_rights"/>
+                    <field name="teeni_status"/>
+                    <field name="pack_size"/>
+            </xpath>
+            <xpath expr="//field[@name='list_price']" position="attributes">
+                <attribute name="groups">teeni_inventory.group_product_price_rights</attribute>
+            </xpath>
+            <xpath expr="//field[@name='standard_price']" position="attributes">
+                <attribute name="groups">teeni_inventory.group_product_price_rights</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="product_product_tree_view_inherit" model="ir.ui.view">
+        <field name="name">product.product.tree.view.inherit</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_product_tree_view"/>
+        <field name="arch" type="xml">
+            <field name="lst_price" position="replace">
+                <field name="lst_price" invisible='1'/>
+            </field>
+            <field name="standard_price" position="replace">
+                <field name="standard_price" invisible='1'/>
+            </field>
+            <field name="virtual_available" position="replace">
+                <field name="virtual_available" invisible='1'/>
+            </field>
+        </field>
+    </record>
+
+    <record id="view_stock_product_template_tree_inherirt" model="ir.ui.view">
+        <field name="name">product.template.stock.tree.inherit.teeni</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="stock.view_stock_product_template_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='list_price']" position="attributes">
+                <attribute name="groups">teeni_inventory.group_product_price_rights</attribute>
+            </xpath>
+            <xpath expr="//field[@name='standard_price']" position="attributes">
+                <attribute name="groups">teeni_inventory.group_product_price_rights</attribute>
+            </xpath>
+            <xpath expr="//field[@name='virtual_available']" position="attributes">
+                <attribute name="groups">teeni_inventory.group_product_price_rights</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ep_product_template_kanban_view" model="ir.ui.view">
+            <field name="model">product.template</field>
+            <field name="inherit_id" ref="product.product_template_kanban_view"/>
+            <field name="arch" type="xml">
+                <xpath expr="//div[@class='oe_kanban_details']/ul/li" position="attributes">
+                    <attribute name="groups">teeni_inventory.group_product_price_rights</attribute>
+                </xpath>
+            </field>
+        </record>
+
+    <record id="product_template_search_view_inherit" model="ir.ui.view">
+        <field name="name">product.template.search.inherit</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_search_view"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="barcode"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

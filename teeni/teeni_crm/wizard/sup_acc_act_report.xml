@@ -1,0 +1,202 @@
+<odoo>
+  <data>
+    <record id="view_sup_acc_act_report" model="ir.ui.view">
+      <field name="name">sup.acc.act.report.wiz.form</field>
+      <field name="model">sup.acc.act.report.wiz</field>
+      <field name="arch" type="xml">
+        <form string="Supplier Activity Report" create="false" edit="false" save="false" discard="false">
+          <group>
+            <group>
+                <field name="supplier_id" domain="[('supplier','=',True), ('parent_id', '=', False)]" options="{'no_create':true, 'no_create_edit':true}"/>
+<!--                <field name="teeni_supplier_id" />-->
+                <field name="group_code"/>
+                <!-- <field name="currency" /> -->
+                <field name="from_date" />
+                <field name="to_date" />
+                <field name="currency_type" widget="radio" options="{'horizontal':1}"/>
+            </group>
+            <group>
+
+            </group>
+          </group>
+            <footer>
+<!--            <button name="run_process" string="Process" type="object" class="btn-primary" />-->
+            <button name="print_report" string="Print Preview" type="object" class="btn-primary" />
+            <button string="Cancel" class="btn-secondary" special="cancel"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+<!--    <record id="cus_acc_act_paperformat_portrait" model="report.paperformat">-->
+<!--      <field name="name">Customer Account Activities Report Format Landscape</field>-->
+<!--      <field name="default" eval="True" />-->
+<!--      <field name="format">A4</field>-->
+<!--      <field name="page_height">0</field>-->
+<!--      <field name="page_width">0</field>-->
+<!--      <field name="orientation">Landscape</field>-->
+<!--      <field name="margin_top">25</field>-->
+<!--      <field name="margin_bottom">5</field>-->
+<!--      <field name="margin_left">7</field>-->
+<!--      <field name="margin_right">7</field>-->
+<!--      <field name="header_line" eval="False" />-->
+<!--      <field name="header_spacing">25</field>-->
+<!--      <field name="dpi">90</field>-->
+<!--    </record>-->
+
+    <report
+      string="Supplier Account Activities Report"
+      id="action_supplier_acc_act_report"
+      model="sup.acc.act.report.wiz"
+      report_type="qweb-html"
+      name="teeni_crm.supplier_acc_act_report"
+      file="teeni_crm.supplier_acc_act_report"
+      print_report_name="'Supplier Account Activities Report'"
+      paperformat="cus_acc_act_paperformat_portrait"
+    />
+
+    <template id="supplier_acc_act_report">
+      <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+          <t t-call="web.basic_layout">
+            <table width="100%">
+              <tr>
+                <td style="text-align:left;">
+                    <h3>TEENI ENTERPRISE PTE LTD-09</h3>
+                    <h3><u>Supplier Account Activities Report</u></h3>
+<!--                    <div>Print Order: Customer ID </div>-->
+                </td>
+              </tr>
+              <tr>
+                <td>From Supplier ID#: <span t-field="o.supplier_id"/></td>
+                <td>To: <span t-field="o.supplier_id"/></td>
+                <td>From Group Code: <span t-field="o.group_code"/></td>
+                <td>To: <span t-field="o.group_code"/></td>
+                <!-- <td>From Currency: <span t-field="o.currency"/></td>
+                <td>To: <span t-field="o.currency"/></td> -->
+                <td>From date: <span t-field="o.from_date"/></td>
+                <td>To date: <span t-field="o.to_date"/></td>
+              </tr>
+            </table>
+            <t t-set="record_sales" t-value="o.run_process()" />
+            <table width="100%">
+              <t t-set="i" t-value="0" />
+              <t t-set="isone" t-value="False"/>
+              <t t-set="cus_name" t-value=""/>
+              <t t-set="sno" t-value="0" />
+              <t t-if="o.currency_type=='single'" >
+                <tr>
+                  <th style="border-top:1px solid; text-align:left;"><strong>Item</strong></th>
+                  <th style="border-top:1px solid; text-align:left;"><strong>Supplier Name</strong></th>
+                  <th style="border-top:1px solid; text-align:left;"><strong></strong></th>
+                  <th style="border-top:1px solid; text-align:right;"><strong></strong></th>
+                  <th style="border-top:1px solid; text-align:right;"><strong></strong></th>
+
+                  <th style="border-top:1px solid; text-align:right;"><strong>Amount</strong></th>
+                  <th style="border-top:1px solid; text-align:right;"><strong>Amount</strong></th>
+                  <th style="border-top:1px solid; text-align:right;"><strong></strong></th>
+                  <th style="border-top:1px solid; text-align:right;"><strong>Currency</strong></th>
+                </tr>
+                <tr>
+                  <th style="border-bottom:1px solid;text-align:left;"><strong>Date</strong></th>
+                  <th colspan="2" style=" border-bottom:1px solid;text-align:left;"><strong>Transaction Description</strong></th>
+<!--                  <th style="border-top:1px solid; border-bottom:1px solid;text-align:left;"><strong></strong></th>-->
+                  <th style="border-bottom:1px solid;text-align:right;"><strong>Term</strong></th>
+                  <th style="border-bottom:1px solid;text-align:right;"><strong>Salesperson</strong></th>
+
+                  <th style="border-bottom:1px solid;text-align:right;"><strong>(DR)</strong></th>
+                  <th style="border-bottom:1px solid;text-align:right;"><strong>(CR)</strong></th>
+                  <th style="border-bottom:1px solid;text-align:right;"><strong>Balances</strong></th>
+                  <th style="border-bottom:1px solid;text-align:right;"><strong>Gain</strong></th>
+                </tr>
+              </t>
+              <t t-if="o.currency_type=='dual'" >
+                <tr>
+                  <th style="border-top:1px solid; text-align:left;"><strong>Item#</strong></th>
+                  <th style="border-top:1px solid; text-align:left;"><strong></strong></th>
+                  <th style="border-top:1px solid; text-align:left;"><strong></strong></th>
+                  <th style="border-top:1px solid; text-align:right;"><strong>Foreign</strong></th>
+                  <th style="border-top:1px solid; text-align:right;"><strong>Balance</strong></th>
+                  <th colspan="2" style="border-top:1px solid; text-align:right;"><![CDATA[<====BASE CURRENCY===>]]><strong></strong></th>
+                  <th style="border-top:1px solid; text-align:right;"><strong></strong></th>
+                  <th style="border-top:1px solid; text-align:right;"><strong>Currency </strong></th>
+                </tr>
+                <tr>
+                  <th style="border-bottom:1px solid; text-align:left;"><strong>Date</strong></th>
+                  <th style="border-bottom:1px solid; text-align:left;"><strong>Transaction Description</strong></th>
+                  <th style="border-bottom:1px solid; text-align:left;"><strong></strong></th>
+                  <th style="border-bottom:1px solid; text-align:right;"><strong>Amount Dr /(Cr)</strong></th>
+                  <th style="border-bottom:1px solid; text-align:right;"><strong>Balance</strong></th>
+                  <th style="border-bottom:1px solid; text-align:right;"><strong>Amount(Dr)</strong></th>
+                  <th style="border-bottom:1px solid; text-align:right;"><strong>Amount(Cr)</strong></th>
+                  <th style="border-bottom:1px solid; text-align:right;"><strong>Balances</strong></th>
+                  <th style="border-bottom:1px solid;text-align:right;"><strong>Gain</strong></th>
+                </tr>
+              </t>
+              <t t-set="line_foreign_total" t-value="0"/>
+              <t t-set="line_balance_total" t-value="0"/>
+              <t t-foreach="record_sales" t-as="line">
+                <t t-if="cus_name!=line.customer_name">
+                  <t t-set="sno" t-value="sno+1" />
+                  <t t-set="line_foreign_total" t-value="0"/>
+                  <t t-set="line_balance_total" t-value="0"/>
+                  <tr>
+                    <td style="text-align:left;"><strong><span t-esc="sno" /></strong></td>
+                    <td style="text-align:left;"><strong><span t-esc="line.customer_name" /></strong></td>
+
+                  </tr>
+<!--                  <tr t-if="o.currency_type=='single'">-->
+<!--                    <td colspan="3" style="text-align:right;">B/F Balance... </td>-->
+<!--                    <td colspan="5" style="text-align:right;"><span t-esc="line.bfbalance" /></td>-->
+<!--                  </tr>-->
+<!--                  <tr t-if="o.currency_type=='dual'">-->
+<!--                    <td colspan="2" style="text-align:right;">B/F Balance... </td>-->
+<!--                    <td colspan="2" style="text-align:right;"><span t-esc="line.foreign_balance" /></td>-->
+<!--                    <td colspan="4" style="text-align:right;"><span t-esc="line.bfbalance" /></td>-->
+<!--                  </tr>-->
+                </t>
+                <t t-set="cus_name" t-value="line.customer_name"/>
+                <tr>
+                  <t t-set="line_foreign_total" t-value="line_foreign_total+line.foreign_amt"/>
+                  <t t-set="line_balance_total" t-value="line_balance_total+line.balances"/>
+                  <!-- <td style="text-align:left;"><span t-esc="i" /></td> -->
+                  <td colspan="1" style="padding-left:1px;"><span t-if="line.description!='B/F Balance'" t-field="line.date" /></td>
+                  <td colspan="2" style="text-align:left;"><span t-field="line.description" /></td>
+                  <td t-if="o.currency_type=='single'" style="text-align:right;"><span t-field="line.payment_term" /></td>
+                  <td t-if="o.currency_type=='single'" style="text-align:right;"><span t-field="line.salesperson" /></td>
+                  <td t-if="o.currency_type=='dual'" style="text-align:right;"><span t-field="line.foreign_amt" /></td>
+                  <td t-if="o.currency_type=='dual'" style="text-align:right;"><span t-esc="'{0:,.2f}'.format(line_foreign_total)"/></td>
+                  <td style="text-align:right;"><span t-field="line.debit" /></td>
+                  <td style="text-align:right;"><span t-field="line.credit" /></td>
+                  <td style="text-align:right;"><span t-esc="'{0:,.2f}'.format(line_balance_total)" /></td>
+                  <td style="text-align:right;"><span t-esc="'{0:,.2f}'.format(line.gain)" /></td>
+                </tr>
+              </t>
+              <tr>
+                <td colspan="5"></td>
+                <td style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><span t-field="o.grand_total_debit" /></td>
+                <td style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><span t-field="o.grand_total_credit" /></td>
+                <td></td>
+              </tr>
+              <tr>
+                <br/>
+                <br/>
+                <td colspan="7" style="text-align:center">
+                  <strong>---------END of REPORT---------</strong>
+                </td>
+              </tr>
+            </table>
+          </t>
+        </t>
+      </t>
+    </template>
+    <record id="action_sup_acc_act_report" model="ir.actions.act_window">
+      <field name="name">Supplier Account Activities Report</field>
+      <field name="res_model">sup.acc.act.report.wiz</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+      <field name="view_id" ref="view_sup_acc_act_report" />
+    </record>
+    <menuitem id="menu_item_sup_acc_act_report" name="Supplier Account Activities Report" parent="account.menu_finance_payables"  action="action_sup_acc_act_report"/>
+  </data>
+</odoo>

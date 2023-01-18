@@ -1,0 +1,142 @@
+<odoo>
+  <data>
+    <record id="view_teeni_profit_report_wiz" model="ir.ui.view">
+      <field name="name">teeni.profit.report.wiz.form.view</field>
+      <field name="model">teeni.profit.report.wiz</field>
+      <field name="arch" type="xml">
+        <form string="Profit Report" create="false" edit="false" save="false" discard="false">
+          <header>
+            <button name="run_process" string="Process" type="object" class="btn-primary" />
+            <button name="print_report" string="Print" type="object" class="btn-primary" />
+<!--            <button name="export_to_excel" string="Export to Excel" type="object" class="btn-primary" />-->
+          </header>
+          <group>
+            <group>
+                <field name="customer_id"  domain="[('customer','=',True), ('parent_id', '=', False)]" options="{'no_create':true, 'no_create_edit':true}"/>
+                <field name="from_date" />
+                <field name="to_date" />
+                <field name="product_id"   options="{'no_create':true, 'no_create_edit':true}"/>
+            </group>
+            <group>
+
+            </group>
+          </group>
+          <notebook>
+            <page string="Profit Report Lines">
+              <field name="rec_lines" readonly="1">
+                <tree editable="bottom">
+                  <field name="sale_order" />
+                  <field name="sale_date"/>
+                  <field name="customer_name" />
+                  <field name="item_name" />
+                  <field name="lot" string="Lot Number"/>
+                  <field name="qty" />
+                  <field name="unit_price" string="Price"/>
+                  <field name="cost"/>
+                  <field name="profit" sum="Total Profit"/>
+                </tree>
+              </field>
+            </page>
+          </notebook>
+        </form>
+      </field>
+    </record>
+<!--    <record id="sales_report_paperformat_portrait" model="report.paperformat">-->
+<!--        <field name="name">Sales Report Paper Format Landscape</field>-->
+<!--        <field name="default" eval="True" />-->
+<!--        <field name="format">A4</field>-->
+<!--        <field name="page_height">0</field>-->
+<!--        <field name="page_width">0</field>-->
+<!--        <field name="orientation">Portrait</field>-->
+<!--        <field name="margin_top">1</field>-->
+<!--        <field name="margin_bottom">5</field>-->
+<!--        <field name="margin_left">7</field>-->
+<!--        <field name="margin_right">7</field>-->
+<!--        <field name="header_line" eval="False" />-->
+<!--        <field name="header_spacing">1</field>-->
+<!--        <field name="dpi">90</field>-->
+<!--    </record>-->
+
+    <report
+      string="Profit Report"
+      id="action_profit_report"
+      model="teeni.profit.report.wiz"
+      report_type="qweb-html"
+      name="teeni_crm.profit_report"
+      file="teeni_crm.profit_report"
+      print_report_name="'Profit Report'"
+      paperformat="sales_report_paperformat_portrait"
+    />
+
+<!--      <report-->
+<!--          id="sales_report_excel"-->
+<!--          model="sales.report.wiz"-->
+<!--          string="Export To Excel"-->
+<!--          report_type="xlsx"-->
+<!--          name="teeni_crm.sr_excel"-->
+<!--          file="sr_excel"-->
+<!--          />-->
+
+      <template id="profit_report">
+          <t t-call="web.html_container">
+              <t t-foreach="docs" t-as="o">
+                  <t t-call="web.basic_layout">
+                      <table width="100%">
+                          <tr>
+                              <td style="text-align:center;">
+                                  <h3>Profit Report</h3>
+                                  <br/>
+                                  <br/>
+                              </td>
+                          </tr>
+                      </table>
+                      <t t-set="record_collection" t-value="o.run_process()" />
+                      <table width="100%">
+                          <tr>
+                              <th style="border:1px solid;text-align:center;"><strong>NO</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Sale Order</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Sale Date</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Customer Name</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Item Name</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Lot Number</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Quantity</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Price</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Cost</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Profit</strong></th>
+                          </tr>
+                          <t t-set="i" t-value="0" />
+                          <t t-set="tot_profit" t-value="0"/>
+                          <tr t-foreach="record_collection" t-as="line">
+                              <t t-set="i" t-value="i+1" />
+                              <t t-set="tot_profit" t-value="tot_profit+line.profit"/>
+                              <td style="border:1px solid;text-align:center;"><span t-esc="i" /></td>
+                              <td style="border:1px solid;padding-left:1px;"><span t-field="line.sale_order" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.customer_name" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.sale_date" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.item_name" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.lot" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.qty" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.unit_price" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.cost" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.profit" /></td>
+                          </tr>
+                          <tr>
+                              <td style="border:1px solid;text-align:center;" colspan="9" >Total</td>
+                              <td style="border:1px solid;text-align:right;"><span t-esc="tot_profit" t-options='{"widget": "float", "precision": 2}'/></td>
+                          </tr>
+                      </table>
+                  </t>
+              </t>
+          </t>
+        </template>
+        <record id="action_report_profit_loss" model="ir.actions.act_window">
+            <field name="name">Profit Report</field>
+            <field name="res_model">teeni.profit.report.wiz</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="view_id" ref="view_teeni_profit_report_wiz" />
+        </record>
+        <menuitem id="menu_item_profit_report" name="Profit Report" parent="sale.menu_sale_report"  action="action_report_profit_loss"/>
+    </data>
+</odoo>

@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="delivery_slip_paperformat_landscape" model="report.paperformat">
+            <field name="name">Delivery Slip Paper Format Landscape</field>
+            <field name="default" eval="True"/>
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Portrait</field>
+            <field name="margin_top">90.5</field>
+            <field name="margin_bottom">82</field>
+            <field name="margin_left">2</field>
+            <field name="margin_right">2</field>
+            <field name="header_line" eval="False"/>
+            <field name="header_spacing">91</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <template id="report_picking_inherit" inherit_id="stock.report_picking">
+             <xpath expr="//table[@t-if='o.move_line_ids']/thead/tr/th" position="before">
+                <th><strong>No</strong></th>
+            </xpath>
+            <xpath expr="//th[@t-if='has_barcode']" position="after">
+                <th width="15%" class="text-center">
+                    <strong>Reccomended Lot Number</strong>
+                </th>
+                <th width="15%" class="text-center">
+                    <strong>Remarks</strong>
+                </th>
+            </xpath>
+            <xpath expr="//t[@t-foreach='o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)']" position="before">
+                <t t-set="i" t-value="0" />
+            </xpath>
+            <xpath expr="//t[@t-foreach='move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)']/tr/td" position="before">
+                <t t-set="i" t-value="i+1" />
+                <td width="5%" class="text-center"><span t-esc="i" /></td>
+            </xpath>
+            <xpath expr="//td[@t-if='has_barcode']" position="after">
+                <td width="15%" class="text-center">
+                    <span t-field="move.rec_lot_number"/>
+                </td>
+                <td width="15%" class="text-center">
+                    <span t-field="move.teeni_remarks"/>
+                </td>
+            </xpath>
+        </template>
+
+        <template id="do_print_with_price">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <t t-set="customer" t-value=""/>
+                        <t t-if="doc.partner_id.parent_id">
+                            <t t-set="customer" t-value="doc.partner_id.parent_id"/>
+                        </t>
+                        <t t-else="">
+                            <t t-set="customer" t-value="doc.partner_id"/>
+                        </t>
+                        <div class="header" style="padding-top:20px;">
+                            <table width="100%" >
+                                <tr>
+                                    <td width="48%">
+<!--                                        <img t-if="doc.company_id.logo" width="100%" t-att-src="image_data_uri(doc.company_id.logo)" alt="Logo"/>-->
+                                        <div style="height:80px;font-size:28px;font-weight:bold;">TEENI ENTERPRISE PTE LTD</div>
+                                        <div t-if="doc.company_id.street"> <span t-field="doc.company_id.street"/></div>
+                                        <div t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/></div>
+                                        <div t-if="doc.company_id.country_id">
+                                            <span t-field="doc.company_id.country_id.name"/>
+                                            <span t-field="doc.company_id.zip"/>
+                                        </div>
+                                        <div t-if="doc.company_id.phone">
+                                            Tel : <span t-field="doc.company_id.phone"/>
+                                            Fax: 6841 6372
+                                        </div>
+                                        <div style="font-size:14px;">
+                                            CO REG NO: 199303608W GST REG NO: M2-0115362-0
+                                        </div>
+                                    </td>
+                                    <td width="2%"></td>
+                                    <td width="48%">
+                                        <table width="100%" style="text-align:center;border:1px solid;">
+                                            <tr>
+                                                <td colspan="3" style="text-align:center;border:1px solid;">
+                                                    <div style="font-size:32px;font-weight:bold;">DELIVERY ORDER</div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;">
+                                                    REF NO
+                                                    <div t-field="doc.name"></div>
+                                                </td>
+                                                <td style="border:1px solid;">
+                                                    DATE
+                                                    <div t-field="doc.scheduled_date"></div>
+                                                </td>
+                                                <td style="border:1px solid;">
+                                                    PAGE
+                                                    <div>
+                                                        <span class="page"/>/<span class="topage"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr height="150" >
+                                    <td colspan="1" style="border-left:1px solid;border-right:1px solid;border-top:1px solid; padding-left:10px;">
+                                        DELIVER TO: <span t-esc="doc.partner_id.name"/>
+                                        <div style="padding-left:30px;">
+                                            <div t-if="doc.partner_id.name"> <span t-field="doc.partner_id.name"/></div>
+                                            <div t-if="doc.partner_id.street"> <span t-field="doc.partner_id.street"/></div>
+                                            <div t-if="doc.partner_id.street2"><span t-field="doc.partner_id.street2"/></div>
+                                            <div t-if="doc.partner_id.city">
+                                                <span t-field="doc.partner_id.city"/>
+                                                <span t-field="doc.partner_id.zip"/>
+                                            </div>
+                                            <div t-if="doc.partner_id.phone"><span t-field="doc.partner_id.phone"/></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border-top:1px solid;"></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="3" style="padding-top:10px;">
+                                        <t t-set="order_no" t-value=""/>
+                                        <t t-set="delivery_date" t-value=""/>
+                                        <t t-foreach="doc.move_lines" t-as="ml">
+                                            <t t-set="order_no" t-value="ml.picking_id.name"/>
+                                            <t t-set="delivery_date" t-value="ml.picking_id.assigned_delivery_date"/>
+                                        </t>
+                                        <table width="100%" style="text-align:center;">
+                                            <tr>
+                                                <td style="border:1px solid;">DELIVERY DATE</td>
+                                                <td style="border:1px solid;">D/O NUMBER</td>
+                                                <td style="border:1px solid;">CUSTOMER</td>
+                                                <td style="border:1px solid;">SALESMAN</td>
+                                                <td style="border:1px solid;">P/O REFERENCE</td>
+<!--                                                <td style="border:1px solid;">DELIVERY VIA</td>-->
+                                                <td style="border:1px solid;">TERMS</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;"><span t-esc="delivery_date"/></td>
+                                                <td style="border:1px solid;"><span t-esc="order_no"/></td>
+                                                <td style="border:1px solid;"><span t-field="doc.partner_id.teeni_customer_id"/></td>
+                                                <td style="border:1px solid;"><span t-field="doc.sale_id.user_id.name"/></td>
+                                                <td style="border:1px solid;"><span t-field="doc.cus_po_num"/></td>
+<!--                                                <td style="border:1px solid;"><span/></td>-->
+                                                <td style="border:1px solid;"><span t-field="doc.sale_id.po_term_id.name"/></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table width="100%" style="margin-top:13px;">
+                                <tr>
+                                    <td style="border:1px solid;text-align:center;" width="7%">No</td>
+                                    <td style="border:1px solid;text-align:center;" width="15%">ITEM CODE</td>
+                                    <td style="border:1px solid;text-align:center;" width="40%">DESCRIPTION</td>
+                                    <td style="border:1px solid;text-align:center;" width="10%">QUANTITY</td>
+<!--                                    <td style="border:1px solid;text-align:center;" width="12%">RETAIL PRICE</td>-->
+                                    <td style="border:1px solid;text-align:center;" width="15%">UNIT COST</td>
+                                    <td style="border:1px solid;text-align:center;" width="13%">AMOUNT</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="Page" style="height:146.7mm;" >
+                            <table width="100%" height="100%" style="border:1px solid;">
+                                <t t-set="i" t-value="0"/>
+                                <t t-set="tot_qty" t-value="0"/>
+                                <t t-set="sub_total" t-value="0"/>
+                                <t t-foreach="doc.move_lines" t-as="line">
+                                    <t t-set="i" t-value="i+1"/>
+                                    <t t-set="tot_qty" t-value="tot_qty+line.quantity_done"/>
+                                    <t t-set="rp" t-value="0"/>
+                                    <t t-set="up" t-value="0"/>
+                                    <t t-set="amount" t-value="0"/>
+                                    <t t-set="grand_total" t-value="0"/>
+                                    <t t-set="display_code" t-value=""/>
+                                    <t t-foreach="customer.customer_price_list" t-as="pl">
+                                        <t t-if="pl.product_id==line.product_id">
+                                            <t t-set="rp" t-value="pl.retail_price"/>
+                                            <t t-set="up" t-value="pl.unit_price"/>
+                                            <t t-set="amount" t-value="pl.unit_price*line.quantity_done"/>
+                                            <t t-set="sub_total" t-value="sub_total+amount"/>
+                                            <t t-set="display_code" t-value="pl.customer_display_code"/>
+                                        </t>
+                                        
+                                    </t>
+                                    <tr height="30">
+                                        <td style="border-right:1px solid;padding-left:2px;" width="7%"><span t-esc="i"/></td>
+                                        <td style="border-right:1px solid;padding-left:2px;" width="15%"><span t-esc="display_code"/></td>
+                                        <td style="border-right:1px solid;padding-left:2px;" width="40%"><span t-field="line.name"/></td>
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="10%"><span t-esc="'{0:,.0f}'.format(line.quantity_done)"/></td>
+<!--                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="12%"><span t-esc="rp"/></td>-->
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="15%"><span t-esc="up"/></td>
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="13%"><span t-esc="amount"/></td>
+                                    </tr>
+                                </t>
+                                <tr height="50">
+                                        <td style="border-right:1px solid;padding-left:2px;" width="7%"></td>
+                                        <td style="border-right:1px solid;padding-left:2px;" width="15%"></td>
+                                        <td style="border-right:1px solid;padding-right:2px;text-align:right;" width="38%">TOTAL QTY:</td>
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="10%"><span t-esc="'{0:,.0f}'.format(tot_qty)"/></td>
+<!--                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="12%"></td>-->
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="15%"></td>
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="13%"><span t-esc="sub_total"/></td>
+                                </tr>
+                            </table>
+
+                        </div>
+                        <div class="footer o_standard_footer;" style="margin-top:0px !important;">
+                            <table width="100%" style="margin-top:0px;border-top:1px solid;">
+                                <tr>
+                                    <td  width="62%" rowspan="4" style="font-size:12px;">
+                                        <span t-field="doc.note"/>
+                                    </td>
+                                    <td  width="10%" style="text-align:right;"><span t-field="doc.sale_id.pricelist_id.currency_id.name"/></td>
+                                    <td style="border-left:1px solid;border-right:1px solid;text-align:left;" width="15%">SUB-TOTAL</td>
+                                    <td style="border-left:1px solid;border-right:1px solid;text-align:right;" width="13%"><span t-field="doc.sale_id.amount_untaxed"/></td>
+                                </tr>
+                                <tr>
+                                    <td  width="10%" style="text-align:right;"><span t-field="doc.sale_id.pricelist_id.currency_id.name"/></td>
+                                    <td style="border:1px solid;text-align:left;" width="15%">GST 7 %</td>
+                                    <td style="border:1px solid;text-align:right;" width="13%"><span t-field="doc.sale_id.amount_tax"/></td>
+                                </tr>
+                                <tr>
+                                    <td  width="10%" style="text-align:right;"><span t-field="doc.sale_id.pricelist_id.currency_id.name"/></td>
+                                    <td style="border:1px solid;text-align:left;" width="15%">GRAND TOTAL</td>
+                                    <td style="border:1px solid;text-align:right;" width="13%"><span t-field="doc.sale_id.amount_total"/></td>
+                                </tr>
+                                <tr>
+
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:bold;padding-left:30px;">Received above goods in good order and condition</td>
+                                    <td colspan="3" style="text-align:center;font-weight:bold;font-size:20px;">
+                                        TEENI ENTERPRISE PTE LTD
+                                    </td>
+                                </tr>
+                            </table>
+                            <table width="100%" style="margin-top:80px;">
+                                <tr height="10">
+                                    <td></td>
+                                    <td width="10%" rowspan="2" style="padding-top:0px;text-align:center;"></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:45%;border-top:1px solid;text-align:center;">CUSTOMER'S STAMP &amp; SIGNATURE</td>
+                                    <td style="width:45%;border-top:1px solid;text-align:center;">AUTHORISED SIGNATURE </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <template id="do_print_no_price">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <t t-set="customer" t-value=""/>
+                        <t t-if="doc.partner_id.parent_id">
+                            <t t-set="customer" t-value="doc.partner_id.parent_id"/>
+                        </t>
+                        <t t-else="">
+                            <t t-set="customer" t-value="doc.partner_id"/>
+                        </t>
+                        <div class="header" style="padding-top:20px;">
+                            <table width="100%" >
+                                <tr>
+                                    <td width="48%">
+                                        <div style="height:80px;font-size:28px;font-weight:bold;">TEENI ENTERPRISE PTE LTD</div>
+                                        <div t-if="doc.company_id.street"> <span t-field="doc.company_id.street"/></div>
+                                        <div t-if="doc.company_id.street2"><span t-field="doc.company_id.street2"/></div>
+                                        <div t-if="doc.company_id.country_id">
+                                            <span t-field="doc.company_id.country_id.name"/>
+                                            <span t-field="doc.company_id.zip"/>
+                                        </div>
+                                        <div t-if="doc.company_id.phone">
+                                            Tel : <span t-field="doc.company_id.phone"/>
+                                            Fax: 6841 6372
+                                        </div>
+                                        <div style="font-size:14px;">
+                                            CO REG NO: 199303608W GST REG NO: M2-0115362-0
+                                        </div>
+                                    </td>
+                                    <td width="2%"></td>
+                                    <td width="48%">
+                                        <table width="100%" style="text-align:center;border:1px solid;">
+                                            <tr>
+                                                <td colspan="3" style="text-align:center;border:1px solid;">
+                                                    <div style="font-size:32px;font-weight:bold;">DELIVERY ORDER</div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;">
+                                                    REF NO
+                                                    <div t-field="doc.name"></div>
+                                                </td>
+                                                <td style="border:1px solid;">
+                                                    DATE
+                                                    <div t-field="doc.scheduled_date"></div>
+                                                </td>
+                                                <td style="border:1px solid;">
+                                                    PAGE
+                                                    <div>
+                                                        <span class="page"/>/<span class="topage"/>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr height="150" >
+                                    <td colspan="1" style="border-left:1px solid;border-right:1px solid;border-top:1px solid; padding-left:10px;">
+                                        DELIVER TO: <span t-esc="doc.partner_id.name"/>
+                                        <div style="padding-left:30px;">
+                                            <div t-if="doc.partner_id.name"> <span t-field="doc.partner_id.name"/></div>
+                                            <div t-if="doc.partner_id.street"> <span t-field="doc.partner_id.street"/></div>
+                                            <div t-if="doc.partner_id.street2"><span t-field="doc.partner_id.street2"/></div>
+                                            <div t-if="doc.partner_id.city">
+                                                <span t-field="doc.partner_id.city"/>
+                                                <span t-field="doc.partner_id.zip"/>
+                                            </div>
+                                            <div t-if="doc.partner_id.phone"><span t-field="doc.partner_id.phone"/></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border-top:1px solid;"></td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="3" style="padding-top:10px;">
+                                        <t t-set="order_no" t-value=""/>
+                                        <t t-set="delivery_date" t-value=""/>
+                                        <t t-foreach="doc.move_lines" t-as="ml">
+                                            <t t-set="order_no" t-value="ml.picking_id.name"/>
+                                            <t t-set="delivery_date" t-value="ml.picking_id.assigned_delivery_date"/>
+                                        </t>
+                                        <table width="100%" style="text-align:center;">
+                                            <tr>
+                                                <td style="border:1px solid;">DELIVERY DATE</td>
+                                                <td style="border:1px solid;">D/O NUMBER</td>
+                                                <td style="border:1px solid;">CUSTOMER</td>
+                                                <td style="border:1px solid;">SALESMAN</td>
+                                                <td style="border:1px solid;">P/O REFERENCE</td>
+<!--                                                <td style="border:1px solid;">DELIVERY VIA</td>-->
+                                                <td style="border:1px solid;">TERMS</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;"><span t-esc="delivery_date"/></td>
+                                                <td style="border:1px solid;"><span t-esc="order_no"/></td>
+                                                <td style="border:1px solid;"><span t-field="doc.partner_id.teeni_customer_id"/></td>
+                                                <td style="border:1px solid;"><span t-field="doc.sale_id.user_id.name"/></td>
+                                                <td style="border:1px solid;"><span t-field="doc.cus_po_num"/></td>
+<!--                                                <td style="border:1px solid;"><span/></td>-->
+                                                <td style="border:1px solid;"><span t-field="doc.sale_id.po_term_id.name"/></td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                            <table width="100%" style="margin-top:13px;">
+                                <tr>
+                                    <td style="border:1px solid;text-align:center;" width="7%">No</td>
+                                    <td style="border:1px solid;text-align:center;" width="15%">ITEM CODE</td>
+                                    <td style="border:1px solid;text-align:center;" width="40%">DESCRIPTION</td>
+                                    <td style="border:1px solid;text-align:center;" width="10%">QUANTITY</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="Page" style="height:146.7mm;" >
+                            <table width="100%" height="100%" style="border:1px solid;">
+                                <t t-set="i" t-value="0"/>
+                                <t t-set="tot_qty" t-value="0"/>
+                                <t t-set="sub_total" t-value="0"/>
+                                <t t-foreach="doc.move_lines" t-as="line">
+                                    <t t-set="i" t-value="i+1"/>
+                                    <t t-set="tot_qty" t-value="tot_qty+line.quantity_done"/>
+                                    <t t-set="display_code" t-value=""/>
+                                    <t t-foreach="customer.customer_price_list" t-as="pl">
+                                        <t t-if="pl.product_id==line.product_id">
+                                            <t t-set="display_code" t-value="pl.customer_display_code"/>
+                                        </t>
+                                        
+                                    </t>
+                                    <tr height="30">
+                                        <td style="border-right:1px solid;padding-left:2px;" width="7%"><span t-esc="i"/></td>
+                                        <td style="border-right:1px solid;padding-left:2px;" width="15%"><span t-esc="display_code"/></td>
+                                        <td style="border-right:1px solid;padding-left:2px;" width="40%"><span t-field="line.name"/></td>
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="10%"><span t-esc="'{0:,.0f}'.format(line.quantity_done)"/></td>
+                                    </tr>
+                                </t>
+                                <tr height="50">
+                                        <td style="border-right:1px solid;padding-left:2px;" width="7%"></td>
+                                        <td style="border-right:1px solid;padding-left:2px;" width="15%"></td>
+                                        <td style="border-right:1px solid;padding-right:2px;text-align:right;" width="38%">TOTAL QTY:</td>
+                                        <td style="border-right:1px solid;text-align:right;padding-right:2px;" width="10%"><span t-esc="'{0:,.0f}'.format(tot_qty)"/></td>
+                                </tr>
+                            </table>
+
+                        </div>
+                        <div class="footer o_standard_footer;" style="margin-top:0px !important;">
+                            <table width="100%" style="margin-top:0px;border-top:1px solid;">
+                                <tr>
+                                    <td  width="62%" rowspan="4" style="font-size:12px;">
+                                        <span t-field="doc.note"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                </tr>
+                                <tr>
+                                </tr>
+                                <tr>
+
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:bold;padding-left:30px;">Received above goods in good order and condition</td>
+                                    <td colspan="3" style="text-align:center;font-weight:bold;font-size:20px;">
+                                        TEENI ENTERPRISE PTE LTD
+                                    </td>
+                                </tr>
+                            </table>
+                            <table width="100%" style="margin-top:80px;">
+                                <tr height="10">
+                                    <td></td>
+                                    <td width="10%" rowspan="2" style="padding-top:0px;text-align:center;"></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:45%;border-top:1px solid;text-align:center;">CUSTOMER'S STAMP &amp; SIGNATURE</td>
+                                    <td style="width:45%;border-top:1px solid;text-align:center;">AUTHORISED SIGNATURE </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <report
+            string="Picking Operations"
+            id="stock.action_report_picking"
+            model="stock.picking"
+            report_type="qweb-pdf"
+            name="teeni_inventory.report_picking_inherit"
+            file="stock.report_picking_operations"
+            print_report_name="'Picking Operations - %s - %s' % (object.partner_id.name or '', object.name)"
+            paperformat="delivery_slip_paperformat_landscape"
+        />
+        <report
+            string="Delivery Slip(With price)"
+            id="action_do_print_with_price"
+            model="stock.picking"
+            report_type="qweb-pdf"
+            name="teeni_inventory.do_print_with_price"
+            file="teeni_inventory.do_print_with_price"
+            print_report_name="'Delivery Slip - %s - %s' % (object.partner_id.name or '', object.name)"
+            paperformat="delivery_slip_paperformat_landscape"
+        />
+        <report
+            string="Delivery Slip(No price)"
+            id="action_do_print_no_price"
+            model="stock.picking"
+            report_type="qweb-pdf"
+            name="teeni_inventory.do_print_no_price"
+            file="teeni_inventory.do_print_no_price"
+            print_report_name="'Delivery Slip - %s - %s' % (object.partner_id.name or '', object.name)"
+            paperformat="delivery_slip_paperformat_landscape"
+        />
+    </data>
+</odoo>

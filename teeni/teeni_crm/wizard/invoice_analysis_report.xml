@@ -1,0 +1,171 @@
+<odoo>
+  <data>
+    <record id="view_invoice_analysis_report" model="ir.ui.view">
+      <field name="name">invoice.analysis.report.wiz.wiz.form</field>
+      <field name="model">invoice.analysis.report.wiz</field>
+      <field name="arch" type="xml">
+        <form string="Invoice Analysis Report" create="false" edit="false" save="false" discard="false">
+          <group>
+            <group>
+                <field name="customer_id"  domain="[('customer','=',True), ('parent_id', '=', False)]" options="{'no_create':true, 'no_create_edit':true}"/>
+                <field name="from_date" />
+                <field name="to_date" />
+            </group>
+            <group>
+
+            </group>
+          </group>
+            <footer>
+<!--            <button name="run_process" string="Process" type="object" class="btn-primary" />-->
+            <button name="print_report" string="Print" type="object" class="btn-primary" />
+            <button string="Cancel" class="btn-secondary" special="cancel"/>
+          </footer>
+<!--          <notebook>-->
+<!--            <page string="Profit Report Lines">-->
+<!--              <field name="rec_lines" readonly="1">-->
+<!--                <tree editable="bottom">-->
+<!--                  <field name="sale_order" />-->
+<!--                  <field name="sale_date"/>-->
+<!--                  <field name="customer_name" />-->
+<!--                  <field name="item_name" />-->
+<!--                  <field name="lot" string="Lot Number"/>-->
+<!--                  <field name="qty" />-->
+<!--                  <field name="unit_price" string="Price"/>-->
+<!--                  <field name="cost"/>-->
+<!--                  <field name="profit" sum="Total Profit"/>-->
+<!--                </tree>-->
+<!--              </field>-->
+<!--            </page>-->
+<!--          </notebook>-->
+        </form>
+      </field>
+    </record>
+    <record id="invoice_analysis_paperformat_landscape" model="report.paperformat">
+        <field name="name">Invoice Analysis Report Format Landscape</field>
+        <field name="default" eval="True" />
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">25</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">25</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <report
+      string="Invoice Analysis Report"
+      id="action_customer_invoice_analysis_report"
+      model="invoice.analysis.report.wiz"
+      report_type="qweb-pdf"
+      name="teeni_crm.invoice_analysis_report"
+      file="teeni_crm.invoice_analysis_report"
+      print_report_name="'Invoice Analysis Report'"
+      paperformat="invoice_analysis_paperformat_landscape"
+    />
+<!--      paperformat="sales_report_paperformat_portrait"-->
+
+<!--      <report-->
+<!--          id="sales_report_excel"-->
+<!--          model="sales.report.wiz"-->
+<!--          string="Export To Excel"-->
+<!--          report_type="xlsx"-->
+<!--          name="teeni_crm.sr_excel"-->
+<!--          file="sr_excel"-->
+<!--          />-->
+
+      <template id="invoice_analysis_report">
+          <t t-call="web.html_container">
+              <t t-foreach="docs" t-as="o">
+                  <t t-call="web.basic_layout">
+                      <div class="header">
+                          <table width="100%">
+                              <tr>
+                                  <td style="text-align:left;">
+<!--                                      <span t-field="company.partner_id.name"/>-->
+                                      <h3>TEENI ENTERPRISE PTE LTD-09</h3>
+                                      <h3><u>Invoice Analysis Report</u></h3>
+                                  </td>
+                              </tr>
+                          </table>
+                      </div>
+                     <div class="page">
+                      <t t-set="record_collection" t-value="o.run_process()" />
+                      <div>
+                          From Date: <span t-field="o.from_date"></span> &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                          To: <span t-field="o.to_date"></span>
+                      </div>
+                      <table width="100%" style="font-size:14px;">
+                          <tr style="border-top:1px solid;border-bottom:1px solid;">
+                              <td><strong>No#</strong></td>
+                              <td><strong>Invoice#</strong></td>
+                              <td><strong>Customer Name</strong></td>
+                              <td style="text-align:center;"><strong>S'P</strong></td>
+                              <td style="text-align:center;"><strong>Date</strong></td>
+                              <td><strong>Curr</strong></td>
+                              <td style="text-align:center;"><strong>Total Amount</strong></td>
+                              <td><strong>Pay Date</strong></td>
+                              <td><strong>Cheque#</strong></td>
+                              <td style="text-align:right;"><strong>Paid Amount</strong></td>
+                          </tr>
+                          <t t-set="i" t-value="0" />
+                          <t t-set="tot_amount" t-value="0"/>
+                          <t t-set="tot_in_base" t-value="0"/>
+                          <t t-set="tot_paid_amt" t-value="0"/>
+                          <t t-foreach="record_collection" t-as="line">
+                            <tr>
+                              <t t-set="i" t-value="i+1" />
+                              <t t-set="tot_amount" t-value="tot_amount+line.total_amount"/>
+                              <t t-set="tot_in_base" t-value="tot_in_base+line.sp"/>
+                              <t t-set="tot_paid_amt" t-value="tot_paid_amt+line.paid_amount"/>
+                              <td><span t-esc="i" /></td>
+                              <td><span t-field="line.invoice_no" /></td>
+                              <td rowspan="2"><span t-field="line.customer_name"/></td>
+                              <td></td>
+                              <td><span t-field="line.date"/></td>
+                              <td><span t-field="line.currency"/></td>
+                              <td style="text-align:right;border-bottom:1px solid;"><span t-field="line.total_amount"/></td>
+                              <td style="padding-left:7px;"><span t-field="line.pay_date" /></td>
+                              <td></td>
+                              <td style="text-align:right;"><span t-field="line.paid_amount"/> </td>
+                            </tr>
+                            <tr>
+                              <td></td>
+                              <td></td>
+<!--                              <td></td>-->
+                              <td style="text-align:right;padding-right:50px;"><span t-field="line.sp" /></td>
+                              <td></td>
+                              <td style="text-align:right;"><span t-field="line.total_amount"/></td>
+                              <td style="text-align:right;border-bottom:double;"><span t-esc="'%.2f'% tot_amount"/></td>
+                              <td style="padding-left:7px;"><span t-field="line.pay_date" /></td>
+                              <td></td>
+                              <td style="text-align:right;"><span t-field="line.paid_amount"/> </td>
+                            </tr>
+                          </t>
+                          <tr>
+                              <td colspan="6" style="text-align:right">Total Grand (In Base):</td>
+                              <td style="text-align:right;border-top:single;border-bottom:double;"><span t-esc="tot_in_base"/> </td>
+                              <td></td>
+                              <td></td>
+                              <td style="text-align:right;border-top:single;border-bottom:double;"><span t-esc="tot_paid_amt"/></td>
+                          </tr>
+                      </table>
+                     </div>
+                  </t>
+              </t>
+          </t>
+        </template>
+        <record id="action_invoice_analysis_report" model="ir.actions.act_window">
+            <field name="name">Invoice Analysis Report</field>
+            <field name="res_model">invoice.analysis.report.wiz</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_invoice_analysis_report" />
+        </record>
+        <menuitem id="menu_item_invoice_analysis_report" name="Invoice Analysis Report" parent="sale.menu_sale_report"  action="action_invoice_analysis_report"/>
+    </data>
+</odoo>

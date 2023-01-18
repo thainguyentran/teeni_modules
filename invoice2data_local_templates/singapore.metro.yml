@@ -1,0 +1,33 @@
+issuer: METRO PRIVATE LIMITED
+fields:
+  amount: NET AMOUNT :\s+(\d+.\d{2})
+  date: PO Date \s+:\s+(\d{4}-\d{2}-\d{2})
+  delivery_date: Delivery Date (\s+\d{2}/\d{2}/\d{4})
+  invoice_number: PO No.\s+:\s+(\d{1,})
+  store_code: Store \s+:\s+(\d{1,}).+
+  cus_po_num: PO No.\s+:\s+(\d{1,})
+  no_of_product_ordered: Total No of Items(\s+\d)
+  partner_name: METRO PRIVATE LIMITED
+keywords:
+- TEENI
+- METRO PRIVATE LIMITED
+
+
+options:
+  currency: SGD
+  remove_whitespace: false
+  date_formats:
+    - '%YYYY-%mm-%dd'
+  decimal_separator: '.'
+  languages:
+    - en
+
+lines:
+  start: 'SEQ\sSKU NO.\sPARENT\s.+'
+  end: '\sSUB TOTAL'
+  # first_line: '^(?P<seq>.+\d{1,})\s+(?P<cus_code>.+)\s+(?P<parentsku>.+)\s+(?P<barcode>.+)\s+(?P<desc>.+)\s+(?P<style>.+)\s+(?P<color>.+)\s+(?P<size>.+)\s+(?P<gst>.+)\s+(?P<Qty>.+)\s+(?P<foc_qty>.+)\s+(?P<tkt_fmt>.+)\s+(?P<c_uom>\.+)\s+(?P<Unit_Price>.+)\s+(?P<Total>\d{1,}.\d{1,})'
+  first_line: '^(?P<seq>\d{1,})\s+(?P<cus_code>\d{1,})\s+(?P<parent_sku>\s)\s+(?P<barcode>\d{1,})\s+(?P<desc>.+)\s+(?P<Qty>\d{1,})\s+(?P<foc_qty>\d{1,})\s+(?P<tkt_fmt>\w.+)\s+(?P<c_uom>\w.+)\s+(?P<Unit_Price>\d{1,}.\d{1,})\s+(?P<Total>\d{1,}.\d{1,})'
+  line: '^(?P<seq>.+\d{1,})$'
+  # line: '^(?P<seq>.+)\s+(?P<cus_code>\d{1,})\s+(?P<parent_sku>)\s+(?P<barcode>\d{1,})\s+(?P<description>.+)$'
+  type:
+    Total: float

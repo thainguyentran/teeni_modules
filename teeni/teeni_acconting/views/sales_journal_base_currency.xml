@@ -1,0 +1,136 @@
+<odoo>
+    <data>
+        <report
+            string="Sales Journal (Base Currency)"
+            id="action_sales_journal_base_currency_print"
+            model="account.invoice"
+            report_type="qweb-pdf"
+            name="teeni_acconting.sales_journal_base_currency_print"
+            file="teeni_acconting.sales_journal_base_currency_print"
+            print_report_name="
+                'Sales Journal - %s' % (object.name)"
+            paperformat="credit_note_paper_format_portrait"
+        />
+
+        <template id="sales_journal_base_currency_print">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <div class="header" style="padding-top:20px;">
+                            <div style="font-size:28px;font-weight:bold;">TEENI ENTERPRISE PTE LTD</div>
+                            <div>139 KAKI BUKIT AVENUE 1 #03-00</div>
+                            <div>SINGAPORE 416004</div>
+                            <div>Tel : 68416370</div>
+                            <div>UEN No : 199303608W &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                                 GST No : M2-0115362-0
+                            </div>
+
+                            <div style="font-size:32px;font-weight:bold;margin-top:20px;text-align:center;">TAX INVOICE</div>
+                            <t t-set="rate" t-value="doc.total_in_base_currency/doc.amount_total"/>
+                            <table width="100%" >
+                                <tr>
+                                    <td width="50%" rowspan="5" style="padding-left:10px;">
+                                        <div style="padding-left:0px;">
+                                            <div t-if="doc.partner_id.name" style="font-weight:bold;"> <span t-field="doc.partner_id.name"/></div>
+                                            <div t-if="doc.partner_id.street"> <span t-field="doc.partner_id.street"/></div>
+                                            <div t-if="doc.partner_id.street2"><span t-field="doc.partner_id.street2"/></div>
+                                            <div t-if="doc.partner_id.city">
+                                                <span t-field="doc.partner_id.city"/>
+                                                <span t-field="doc.partner_id.zip"/>
+                                            </div>
+                                            <div>Tel No: <span t-field="doc.partner_id.phone"/> </div>
+
+                                        </div>
+                                    </td>
+                                    <td style="padding-left:50px;">REF NO</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span t-field="doc.number"/> </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left:50px;">DATE</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span t-field="doc.date_invoice"/> </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left:50px;">TERMS</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span t-field="doc.payment_term_id.name"/> </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left:50px;">CURR CODE</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span t-field="doc.currency_id.name"/> </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left:50px;">Rate</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span t-esc="'{0:,.4f}'.format(rate)" /> </td>
+                                </tr>
+
+                            </table>
+                        </div>
+                        <div class="Page" style="height:100%;" >
+                            <table width="100%">
+                                <tr style="border-top:1px solid;border-bottom:1px solid;">
+                                    <td style="text-align:left;font-weight:bold;" width="5%">ITEM</td>
+                                    <td style="text-align:left;font-weight:bold;" width="75%">PARTICULAR</td>
+                                    <td style="text-align:right;font-weight:bold;" width="20%">AMOUNT</td>
+                                </tr>
+                                  <t t-set="i" t-value="0"/>
+                                  <t t-foreach="doc.invoice_line_ids" t-as="line">
+                                  <t t-set="i" t-value="i+1"/>
+                                  <tr>
+                                      <td width="5%"><span t-esc="i"></span></td>
+                                      <td width="75%"><span t-field="line.name"></span></td>
+                                      <td width="20%" style="text-align:right;"><span t-esc="'{0:,.2f}'.format(line.price_subtotal*rate)"></span></td>
+                                  </tr>
+                                </t>
+
+                            </table>
+                            <div style="text-align:center;">
+                                   ----------------------------------------------------Last Item ----------------------------------------------------
+                                </div>
+                        </div>
+                        <div class="footer o_standard_footer;" style="margin-top:0px !important;">
+                            <table width="100%" style="margin-top:0px;border-top:1px solid;">
+                                <tr>
+                                    <td width="50%" style="text-align:right">E&amp;O.E.</td>
+                                    <td width="25%" style="text-align:right;">SUB-TOTAL</td>
+                                    <td width="5%" style="text-align:center;"><span t-field="doc.currency_id.name"/></td>
+                                    <td width="20%" style="text-align:right;"><span t-esc="'{0:,.2f}'.format((doc.total_before_discount-doc.discount)*rate)"/></td>
+                                </tr>
+                                <tr t-if="doc.invoice_discount_amount!=0">
+                                    <td>Remarks: </td>
+                                    <td style="text-align:right;">Invoice Discount</td>
+                                    <td style="text-align:center;"><span t-field="doc.currency_id.name"/></td>
+                                    <td style="text-align:right;"><span t-esc="'{0:,.2f}'.format(doc.invoice_discount_amount*rate)"/></td>
+                                </tr>
+                                <tr t-else=""></tr>
+                                <tr>
+                                    <td></td>
+                                    <td style="text-align:right;">GST 7 %</td>
+                                    <td style="text-align:center;"><span t-field="doc.currency_id.name"/></td>
+                                    <td style="text-align:right;"><span t-esc="'{0:,.2f}'.format(doc.amount_tax*rate)"/></td>
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td style="text-align:right;">GRAND TOTAL</td>
+                                    <td style="text-align:center;"><span t-field="doc.currency_id.name"/></td>
+                                    <td style="text-align:right;"><span t-esc="'{0:,.2f}'.format(doc.amount_total*rate)"/></td>
+                                </tr>
+
+                            </table>
+                            <div style="margin-top:200px;" t-if="doc.partner_id.customer">This is a computer generated document, no signature is required.</div>
+                           <div style="margin-top:200px;" t-else="">
+                               <table width="100%">
+                                   <tr>
+                                       <td width="70%"></td>
+                                       <td width="30%" style="border-top:1px solid;font-weight:bold;text-align:center;">Authorised Signature</td>
+                                   </tr>
+                               </table>
+                           </div>
+                            <div style="text-align:center;">
+                                PAGE <span class="page"/>/<span class="topage"/>
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

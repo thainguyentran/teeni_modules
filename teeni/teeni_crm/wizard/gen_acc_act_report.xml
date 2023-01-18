@@ -1,0 +1,191 @@
+<odoo>
+  <data>
+    <record id="view_gen_acc_act_report" model="ir.ui.view">
+      <field name="name">gen.acc.act.report.wiz.form</field>
+      <field name="model">gen.acc.act.report.wiz</field>
+      <field name="arch" type="xml">
+        <form string="G/L Account Activities Report" create="false" edit="false" save="false" discard="false">
+          <group>
+            <group>
+                <field name="ac_code"/>
+                <field name="ac_name" />
+                <field name="ds_code"/>
+                <field name="ds_name" />
+                <field name="from_date" />
+                <field name="to_date" />
+            </group>
+            <group>
+
+            </group>
+          </group>
+            <footer>
+<!--            <button name="run_process" string="Process" type="object" class="btn-primary" />-->
+            <button name="print_report" string="Print Preview" type="object" class="btn-primary" />
+            <button string="Cancel" class="btn-secondary" special="cancel"/>
+          </footer>
+        </form>
+      </field>
+    </record>
+    <record id="gen_acc_act_paperformat_portrait" model="report.paperformat">
+      <field name="name">G/L Account Activities Report Format Landscape</field>
+      <field name="default" eval="True" />
+      <field name="format">A4</field>
+      <field name="page_height">0</field>
+      <field name="page_width">0</field>
+      <field name="orientation">Landscape</field>
+      <field name="margin_top">25</field>
+      <field name="margin_bottom">5</field>
+      <field name="margin_left">7</field>
+      <field name="margin_right">7</field>
+      <field name="header_line" eval="False" />
+      <field name="header_spacing">25</field>
+      <field name="dpi">90</field>
+    </record>
+
+    <report
+      string="G/L Account Activities Report"
+      id="action_general_acc_act_report"
+      model="gen.acc.act.report.wiz"
+      report_type="qweb-html"
+      name="teeni_crm.gen_acc_act_report"
+      file="teeni_crm.gen_acc_act_report"
+      print_report_name="'G/L Account Activities Report'"
+      paperformat="gen_acc_act_paperformat_portrait"
+    />
+
+    <template id="gen_acc_act_report">
+      <t t-call="web.html_container">
+        <t t-foreach="docs" t-as="o">
+          <t t-call="web.basic_layout">
+            <table width="100%">
+              <tr>
+                <td style="text-align:left;">
+                    <h3>TEENI ENTERPRISE PTE LTD-09</h3>
+                    <h3><u>G/L Account Activities Report</u></h3>
+                    <!-- <div>Print Order: Supplier ID </div> -->
+                </td>
+              </tr>
+              <tr>
+                <td>From A/C Code#: <span t-field="o.ac_code"/></td>
+                <td>To: <span t-field="o.ac_code"/></td>
+                <td>From A/C Name: <span t-field="o.ac_name"/></td>
+                <td>To: <span t-field="o.ac_name"/></td>
+                <td>From D/S Code: <span t-field="o.ds_code"/></td>
+                <td>To: <span t-field="o.ds_code"/></td>
+                <td>From D/S Name: <span t-field="o.ds_name"/></td>
+                <td>To: <span t-field="o.ds_name"/></td>
+                <td>From date: <span t-field="o.from_date"/></td>
+                <td>To date: <span t-field="o.to_date"/></td>
+              </tr>
+            </table>
+            <t t-set="record_sales" t-value="o.run_process()" />
+
+            <table width="100%">
+              <t t-set="i" t-value="0" />
+              <t t-set="isone" t-value="False"/>
+              <t t-set="acc_code" t-value=""/>
+              <t t-set="sno" t-value="0" />
+              <tr>
+                <th style="border-top:1px solid; border-bottom:1px solid;text-align:left;"><strong>Item#</strong></th>
+                <th style="border-top:1px solid; border-bottom:1px solid;text-align:left;"><strong>AC Code</strong></th>
+                <th style="border-top:1px solid; border-bottom:1px solid;text-align:left;"><strong>Curr</strong></th>
+                <th style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Account Name</strong></th>
+                <th colspan="2" style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>========Default Currency========</strong></th>
+                <th colspan="2" style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Currency</strong></th>
+              </tr>
+              <tr>
+                <th style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Date</strong></th>
+                <th colspan="2" style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Transaction Description</strong></th>
+                <th style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Amount(Dr)</strong></th>
+                <th style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Amount(Cr)</strong></th>
+                <th style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Balances</strong></th>
+                <th style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><strong>Gain</strong></th>
+              </tr>
+              <t t-foreach="record_sales" t-as="line">
+                <t t-if="acc_code!=line.ac_code">
+                  <t t-set="sno" t-value="sno+1" />
+                  <tr>
+                    <td style="text-align:left;"><strong><span t-esc="sno" /></strong></td>
+                    <td style="text-align:left;"><strong><span t-field="line.ac_code" /></strong></td>
+                    <td style="text-align:left;"><strong><span t-field="line.currency" /></strong></td>
+                    <td style="text-align:right;"><strong><span t-field="line.ac_name" /></strong></td>
+                  </tr>
+                </t>
+                <t t-set="acc_code" t-value="line.ac_code"/>
+                <tr>
+                  <!-- <td style="text-align:left;"><strong><span t-esc="i" /></strong></td> -->
+                  <td style="text-align:left;"><span t-field="line.date" /></td>
+                  <td colspan="2" style="text-align:left;"><span t-field="line.description" /></td>
+                  <td style="text-align:right;"><span t-field="line.debit" /></td>
+                  <td style="text-align:right;"><span t-field="line.credit" /></td>
+                  <td style="text-align:right;"><span t-field="line.balances" /></td>
+                  <td style="text-align:right;"><span t-field="line.gain" /></td>
+                </tr>
+              </t>
+              <tr>
+                <td colspan="4"></td>
+                <td style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><span t-field="o.grand_total_debit" /></td>
+                <td style="border-top:1px solid; border-bottom:1px solid;text-align:right;"><span t-field="o.grand_total_credit" /></td>
+              </tr>
+              <tr>
+                <br/>
+                <br/>
+                <td colspan="7" style="text-align:center">
+                  <strong>---------END of REPORT---------</strong>
+                </td>
+              </tr>
+            </table>
+            <table>
+              <thead>
+                <tr>
+                  <th colspan="4">LEGENDS:-</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>SJN - Customer Sale Journal</td>
+                  <td>PJN - Supplier Purchase Journal</td>
+                  <td>GLJ - GL Journal</td>
+                  <td>UGL - Unrealized Gain Loss</td>
+                </tr>
+                <tr>
+                  <td>CDN - Customer Debit Note</td>
+                  <td>SDN - Supplier Debit Note</td>
+                  <td>RCT - Receipt</td>
+                  <td>YEC - Year End Closing</td>
+                </tr>
+                <tr>
+                  <td>CCN - Customer Credit Note</td>
+                  <td>SCN - Supplier Credit Note</td>
+                  <td>PYM - Payment</td>
+                  <td>FDJ - Fixed Assets Depreciation</td>
+                </tr>
+                <tr>
+                  <td>CIV - Customer Invoice</td>
+                  <td>SIV - Supplier Invoice</td>
+                  <td>PIV - POS Invoice</td>
+                  <td>FAD - Fixed Asset Disposal</td>
+                </tr>
+                <tr>
+                  <td>ICC - Customer Inventory Credit Note</td>
+                  <td>ISC - Supplier Inventory Credit Note</td>
+                  <td>PRC - POS Receipt</td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+          </t>
+        </t>
+      </t>
+    </template>
+    <record id="action_gen_acc_act_report" model="ir.actions.act_window">
+      <field name="name">G/L Account Activities Report</field>
+      <field name="res_model">gen.acc.act.report.wiz</field>
+      <field name="view_type">form</field>
+      <field name="view_mode">form</field>
+      <field name="target">new</field>
+      <field name="view_id" ref="view_gen_acc_act_report" />
+    </record>
+    <menuitem id="menu_item_gen_acc_act_report" name="G/L Account Activities Report" parent="account.menu_finance_reports"  action="action_gen_acc_act_report"/>
+  </data>
+</odoo>

@@ -1,0 +1,35 @@
+issuer: GUARDIAN HEALTH & BEAUTY
+fields:
+  amount: Total No. of Ordered Quantity in CTN \s+[:](\s+\d{1,}.\d{1,})
+  date: Date of Order \s+[:](\s+\d{2}-\w{3}-\d{4})
+  delivery_date: Last Day of Delivery[:](\s+\d{2}-\w{3}-\d{4})
+  gst_no: MR-8500225-7
+  invoice_number: Order No. \s+[:]\s(\d.+)
+  store_code: \((\d{1,})\)
+  cus_po_num: Order No. \s+[:]\s(\d.+)
+  no_of_product_ordered: Total No. of Products Ordered :(\s+\d{1,})
+  partner_name: Guardian Health and Beauty
+keywords:
+- TEENI
+- Guardian Health and Beauty
+- Guardian
+
+
+options:
+  currency: SGD
+  remove_whitespace: false
+  date_formats:
+    - '%dd-%mmm-%YYYY'
+  decimal_separator: '.'
+  languages:
+    - en
+  replace:
+    - [',','']
+
+lines:
+  start: 'Code'
+  end: 'Total No. of Ordered Quantity in Pallets \s+:\s'
+  first_line: '^(?P<barcode>.+\s)\s+(?P<cus_code>\d+)\s+(?P<description>\w.+\s)\s+(?P<size>\d{1,}\s\w.+)\s+(?P<pack_qty>\d{1,}\s)\s+(?P<Unit_Price>\w.+\s)\s+(?P<Qty>\d{1,}\s)\s+(?P<Total>\d+)'
+  line: '^(?P<barcode>\s)$'
+  type:
+    Unit_Price: float

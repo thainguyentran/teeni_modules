@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="teeni_view_backorder_confirmation" model="ir.ui.view">
+        <field name="name">teeni_stock_backorder_confirmation</field>
+        <field name="model">teeni.stock.backorder.confirmation</field>
+        <field name="arch" type="xml">
+            <form string="Backorder creation">
+                <group>
+                    <p>
+                        You have processed less products than the initial demand.
+                    </p><p class="text-muted">
+                        Here are the list of not done products:
+                        <field name="bo_product" readonly='1'>
+                            <tree >
+                                <field name="product_id" />
+                                <field name="product_uom_qty" string="Initial Demand" />
+                                <field name="quantity_done" string="Done" />
+                            </tree>
+                        </field>
+                    </p>
+                </group>
+                <footer>
+                    <button name="process" string="Create Backorder" type="object" class="oe_highlight"/>
+                    <button name="process_cancel_backorder" string="No Backorder" type="object" class="btn-primary"/>
+                    <button string="_Cancel" class="btn-secondary" special="cancel" />
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

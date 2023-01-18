@@ -1,0 +1,33 @@
+issuer: WELCIA-BHG (SINGAPORE) PTE LTD
+fields:
+  amount: Grand Total - \s+(\d.+)
+  date: Date- (\d{2}/\d{2}/\d{2})
+  delivery_date: Ship Date - (\d{2}/\d{2}/\d{2})
+  invoice_number: P/O Number - (\d.+)
+  store_code: WELCIA-BHG (\w{1,})
+  cus_po_num: P/O Number - (\d.+)
+  no_of_product_ordered: Total No of Items(\s+\d)
+  partner_name: Welcia-BHG
+keywords:
+- TEENI ENTERPRISE PTE LTD
+- Welcia
+- Welcia-BHG
+- Welcia-BHG (S) P L
+
+
+options:
+  currency: SGD
+  remove_whitespace: false
+  date_formats:
+    - '%dd/%mm/%yy'
+  decimal_separator: '.'
+  languages:
+    - en
+
+lines:
+  start: 'UPC/Bar code\s+SKU Number\s+Description\s+Term U/M\s+U/M\s+Retail\s+Cost\s+Cost\s+CS\s+Pcs\s+Pcs\s+Retail\s+Cost\s+GM%'
+  end: 'Sub Total -\s.+'
+  first_line: '^(?P<barcode>\d{1,})\s+(?P<cus_code>\d{1,}-\d{1,})\s+(?P<description>.+)\s+(?P<term>\w{1,})\s+(?P<sell_uom>\w{1,})\s+(?P<buy_uom>\w{1,})\s+(?P<retail_price>\d{1,}[.]\d{1,})\s+(?P<Unit_Price>\d{1,}[.]\d{1,})\s+(?P<net_cost>\d{1,}[.]\d{1,})\s+(?P<qty_cs>\d{1,})\s+(?P<Qty>\d{1,})\s+(?P<qty_rec_pcs>\d{1,})\s+(?P<ex_retail>\w.+)\s+(?P<Total>\w.+)\s+(?P<gm>\w.+)'
+  line: '^(?P<barcode>\d{1,})$'
+  type:
+    Total: float

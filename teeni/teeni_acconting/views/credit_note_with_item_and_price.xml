@@ -1,0 +1,166 @@
+<odoo>
+    <data>
+
+        <report
+            string="Credit Note (With Item &amp; Price)"
+            id="action_credit_note_print_with_Item_and_price"
+            model="account.invoice"
+            report_type="qweb-pdf"
+            name="teeni_acconting.credit_note_print_with_Item_and_price"
+            file="teeni_acconting.credit_note_print_with_Item_and_price"
+            print_report_name="
+                'Credit Note - %s' % (object.name)"
+            paperformat="credit_note_paper_format_portrait"
+        />
+
+        <template id="credit_note_print_with_Item_and_price">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="web.basic_layout">
+                        <div class="header" style="padding-top:20px;">
+                            <table width="100%">
+                                <tr>
+                                    <td width="60%">
+                                        <div style="font-size:28px;font-weight:bold;">TEENI ENTERPRISE PTE LTD</div>
+                                        <div>139 KAKI BUKIT AVENUE 1 #03-00</div>
+                                        <div>SINGAPORE 416004</div>
+                                        <div>Tel : 68416370</div>
+                                        <div>UEN No : 199303608W &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;
+                                             GST No : M2-0115362-0
+                                        </div>
+                                    </td>
+                                    <td width="40%">
+                                        <div style="font-size:28px;font-weight:bold;margin-top:20px;text-align:center;">TAX CREDIT NOTE</div>
+                                    </td>
+                                </tr>
+                            </table>
+
+
+
+                            <table width="100%" >
+                                <tr>
+                                    <td width="50%" rowspan="6" style="padding-left:10px;border:1px solid;">
+                                        <div style="padding-left:0px;">
+                                            <div t-if="doc.partner_id.name" style="font-weight:bold;"> <span t-field="doc.partner_id.name"/></div>
+                                            <div t-if="doc.partner_id.street"> <span t-field="doc.partner_id.street"/></div>
+                                            <div t-if="doc.partner_id.street2"><span t-field="doc.partner_id.street2"/></div>
+                                            <div t-if="doc.partner_id.city">
+                                                <span t-field="doc.partner_id.city"/>
+                                                <span t-field="doc.partner_id.zip"/>
+                                            </div>
+                                            <div>Tel No: <span t-field="doc.partner_id.phone"/> </div>
+                                            <div>Fax No: </div>
+                                            <div>Attn.  </div>
+
+                                        </div>
+                                    </td>
+                                    <td style="font-weight:bold;padding-left:100px;" width="25%">C/N NO#</td>
+                                    <td style="font-weight:bold;" width="25%">: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span t-field="doc.number"/> </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-weight:bold;padding-left:100px;">A/C NO#</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp; </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left:100px;">DATE</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span t-field="doc.date_invoice"/> </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left:100px;">SALESPERSON</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span t-field="doc.user_id.name"/> </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left:100px;">CURRENCY</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span t-field="doc.currency_id.name"/> </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left:100px;">PAGE</td>
+                                    <td>: &amp;nbsp;&amp;nbsp;&amp;nbsp;&amp;nbsp;<span class="page"/>/<span class="topage"/> </td>
+                                </tr>
+
+                            </table>
+                            Remark:
+                        </div>
+                        <div class="Page" style="height:100%;" >
+                            <table width="100%">
+                                <tr style="border-top:1px solid;border-bottom:1px solid;">
+                                    <td style="text-align:left;font-weight:bold;" width="5%">NO.</td>
+                                    <td style="text-align:left;font-weight:bold;" width="20%">PRODUCT CODE</td>
+                                    <td style="text-align:left;font-weight:bold;" width="">PARTICULAR</td>
+                                    <td style="text-align:center;font-weight:bold;" width="12%" colspan="2">Qty</td>
+                                    <td style="text-align:right;font-weight:bold;" width="15%">UNIT PRICE</td>
+                                    <td style="text-align:right;font-weight:bold;" width="10%">AMOUNT</td>
+                                </tr>
+                                  <t t-set="i" t-value="0"/>
+                                  <t t-foreach="doc.invoice_line_ids" t-as="line">
+                                  <t t-set="i" t-value="i+1"/>
+                                  <t t-set="display_code" t-value=""/>
+                                   <t t-foreach="doc.partner_id.customer_price_list" t-as="pl">
+                                       <t t-if="pl.product_id==line.product_id">
+                                           <t t-set="display_code" t-value="pl.customer_display_code"/>
+                                       </t>
+                                   </t>
+                                  <tr>
+                                      <td><span t-esc="i"></span></td>
+                                      <td><span t-esc="display_code"></span></td>
+                                      <td><span t-field="line.name"></span></td>
+                                      <td style="text-align:right;" width="6%"><span t-esc="'{0:,.0f}'.format(line.quantity)"></span></td>
+                                      <td style="padding-left:4px;"><span t-field="line.uom_id.name" width="6%"></span></td>
+                                      <td style="text-align:right;"><span t-field="line.price_unit"></span></td>
+                                      <td style="text-align:right;" width="10%"><span t-field="line.price_subtotal"></span></td>
+                                  </tr>
+                                </t>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td style="text-align:right;"></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td style="text-align:right;"><span t-field="doc.currency_id.name"/> </td>
+                                    <td style="text-align:right;border-top:1px solid;"><span t-field="doc.amount_untaxed"/> </td>
+
+                                </tr>
+                                <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td style="text-align:right;">ADD G.S.T</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td style="text-align:right;">GST 7.00 % <span t-field="doc.currency_id.name"/> </td>
+                                    <td style="text-align:right;"><span t-field="doc.amount_tax"/> </td>
+
+                                </tr>
+
+                            </table>
+
+                        </div>
+                        <div class="footer o_standard_footer;" style="margin-top:0px !important;border-top:4px solid;padding-top:5px;">
+                            <table width="100%" style="margin-top:0px;;">
+                                <tr>
+                                    <td><span t-field="doc.currency_id.name"/> : <span t-esc="doc.currency_id.amount_to_text(doc.amount_total)"/> </td>
+                                    <td style="text-align:right;" width="20%">TOTAL AMOUNT</td>
+                                    <td style="text-align:center;" width="7%"><span t-field="doc.currency_id.name"/></td>
+                                    <td style="text-align:right;border:1px solid;" width="10%"><span t-field="doc.amount_total"/></td>
+                                </tr>
+
+                            </table>
+                            <table width="100%" style="margin-top:220px;">
+                                <tr height="10">
+                                    <td></td>
+                                    <td width="10%" rowspan="2" style="padding-top:0px;text-align:center;"></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td style="width:40%;border-top:1px solid;text-align:center;font-weight:bold;">FOR : TEENI ENTERPRISE PTE LTD</td>
+                                    <td style="width:20%;"></td>
+                                    <td style="width:40%;border-top:1px solid;text-align:center;font-weight:bold;">COMPANY STAMP AND SIGNATURE </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

@@ -1,0 +1,34 @@
+issuer: PAN PACIFIC RETAIL MANAGEMENT (SINGAPORE) PTE LTD
+fields:
+  amount: Total SGD Incl. GST \s+(\d+.\d{2})
+  date: Document Date\s+(.+)
+  delivery_date: Delivery Date (\s+\d{2}/\d{2}/\d{4})
+  invoice_number: Order No. \s+(\d{1,})
+  store_code: Store Code \s+(\d{1,})
+  cus_po_num: Order No. \s+(\d{1,})
+  no_of_product_ordered: Total No of Items(\s+\d)
+  partner_name: Pan Pacific Retail Management \(Singapore\) Pte Ltd
+keywords:
+- Teeni
+- Pan Pacific Retail Management (Singapore) Pte Ltd
+
+
+options:
+  currency: SGD
+  remove_whitespace: false
+  date_formats:
+    - '%dd. %mmm %YYYY'
+    # - '%M %dd %YYYY'
+  decimal_separator: '.'
+  languages:
+    - en
+  replace:
+    - [',','']
+
+lines:
+  start: 'Barcode\s+Description\s+Item No.\s+UOM Qty\s+Qty\s+Qty\s+GST\)\s+Disc. % Inv. Disc. GST\s+Amount'
+  end: '\n+\s+Total SGD Excl. GST \s'
+  first_line: '^(?P<cus_code>\d{1,})\s+(?P<description>\w.+)\s+(?P<barcode>.+)\s+(?P<d_uom>\s)\s+(?P<unit_pack_qty>\d{1,})\s+(?P<Qty>\d{1,})\s+(?P<box_qty>\d{1,})\s+(?P<Unit_Price>\d{1,}.\d{1,})\s+(?P<disc>\s)\s+(?P<allow_inv_disc>\w{1,})\s+(?P<gst>\d{1,})\s+(?P<Total>\d{1,}.\d{1,})'
+  line: '^(?P<cus_code>\d{1,})$'
+  type:
+    Total: float

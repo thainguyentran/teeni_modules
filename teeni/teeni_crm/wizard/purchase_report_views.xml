@@ -1,0 +1,148 @@
+<odoo>
+  <data>
+    <record id="view_purchase_report_form" model="ir.ui.view">
+      <field name="name">purchase.report.form.view</field>
+      <field name="model">purchase.report.wiz</field>
+      <field name="arch" type="xml">
+        <form string="Purchase Report" create="false" edit="false" save="false" discard="false">
+          <header>
+            <button name="run_process" string="Process" type="object" class="btn-primary" />
+            <button name="print_report" string="Print" type="object" class="btn-primary" />
+            <button name="export_to_excel" string="Export to Excel" type="object" class="btn-primary" />
+          </header>
+          <group>
+            <group>
+                <field name="year" />
+                <field name="month" />
+                <field name="day" />
+            </group>
+            <group>
+              <field name="supplier" domain="[('supplier','=',True), ('parent_id', '=', False)]"/>
+              <field name="supplier_id" />
+              <field name="group_code" />
+              <field name="currency" />
+              <field name="product" />
+            </group>
+          </group>
+          <notebook>
+            <page string="Purchase Report Lines">
+              <field name="purchase_lines" readonly="1">
+                <tree editable="bottom">
+                  <field name="purchase_order" />
+                  <field name="supplier_name" />
+                  <field name="supplier_id" />
+                  <field name="group_code" />
+                  <field name="currency" />
+                  <field name="item_name" />
+                  <field name="unit_price" />
+                  <field name="ordered_qty" />
+                  <field name="order_date"/>
+                  <field name="received_qty" />
+                  <field name="received_date"/>
+                </tree>
+              </field>
+            </page>
+          </notebook>
+        </form>
+      </field>
+    </record>
+    <record id="purchase_report_paperformat_portrait" model="report.paperformat">
+        <field name="name">Purchase Report Paper Format Landscape</field>
+        <field name="default" eval="True" />
+        <field name="format">A4</field>
+        <field name="page_height">0</field>
+        <field name="page_width">0</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">1</field>
+        <field name="margin_bottom">5</field>
+        <field name="margin_left">7</field>
+        <field name="margin_right">7</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">1</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <report
+      string="Purchase Report"
+      id="action_purchase_report"
+      model="purchase.report.wiz"
+      report_type="qweb-html"
+      name="teeni_crm.purchase_report"
+      file="teeni_crm.purchase_report"
+      print_report_name="'Purchase Report'"
+      paperformat="purchase_report_paperformat_portrait"
+    />
+
+      <report
+          id="purchase_report_excel"
+          model="purchase.report.wiz"
+          string="Export To Excel"
+          report_type="xlsx"
+          name="teeni_crm.sr_excel"
+          file="sr_excel"
+          />
+
+      <template id="purchase_report">
+          <t t-call="web.html_container">
+              <t t-foreach="docs" t-as="o">
+                  <t t-call="web.basic_layout">
+                      <table width="100%">
+                          <tr>
+                              <td style="text-align:center;">
+                                  <h3>Purchase Report</h3>
+                                  <br/>
+                                  <br/>
+                              </td>
+                          </tr>
+                      </table>
+                      <t t-set="record_collection" t-value="o.run_process()" />
+                      <table width="100%">
+                          <tr>
+                              <th style="border:1px solid;text-align:center;"><strong>NO</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Purchase Order</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Supplier Name</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Supplier ID</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Group Code</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Currency</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Item Name</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Price</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Ordered Quantity</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Order Date</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Recevived Quantity</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Received Date</strong></th>
+                          </tr>
+                          <t t-set="i" t-value="0" />
+                          <tr t-foreach="record_collection" t-as="line">
+                              <t t-set="i" t-value="i+1" />
+                              <td style="border:1px solid;text-align:center;"><span t-esc="i" /></td>
+                              <td style="border:1px solid;padding-left:1px;"><span t-field="line.purchase_order" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.supplier_name" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.supplier_id" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.group_code" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.currency" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.item_name" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.unit_price" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.ordered_qty" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.order_date" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.received_qty" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.received_date" /></td>
+                          </tr>
+                      </table>
+                  </t>
+              </t>
+          </t>
+        </template>
+        <record id="action_report_purchase" model="ir.actions.act_window">
+            <field name="name">Purchase Report</field>
+            <field name="res_model">purchase.report.wiz</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="view_id" ref="view_purchase_report_form" />
+        </record>
+
+        <menuitem id="menu_item_purchase_report" name="Purchase Report"
+            parent="purchase.menu_procurement_management"
+            action="action_report_purchase"/>
+    </data>
+</odoo>

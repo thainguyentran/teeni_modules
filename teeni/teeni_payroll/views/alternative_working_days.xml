@@ -1,0 +1,48 @@
+<odoo>
+  <data>
+      <record id="alternative_working_days_view_form" model="ir.ui.view">
+        <field name="name">alternative.aworking.days.form</field>
+        <field name="model">alternative.working.days</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="year"></field>
+                    </group>
+                    <group>
+                        <field name="week_day" string="Day of Week"/>
+                    </group>
+                    <notebook>
+                        <page string="Alternative Working Days">
+                            <field name="rec_lines">
+                                <tree editable="bottom">
+                                    <field name="alternative_day_id" invisible="1"/>
+                                    <field name="date" />
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+      </record>
+
+      <record id="alternative_working_days_view_tree" model="ir.ui.view">
+        <field name="name">alternative.working.days.form</field>
+        <field name="model">alternative.working.days</field>
+        <field name="arch" type="xml">
+            <tree>
+                 <field name="year"></field>
+                <field name="week_day" string="Day of Week"/>
+            </tree>
+        </field>
+      </record>
+      <record model="ir.actions.act_window" id="action_alternative_working_days">
+          <field name="name">Alternative Working Days</field>
+          <field name="res_model">alternative.working.days</field>
+          <field name="view_type">form</field>
+          <field name="view_mode">tree,form</field>
+      </record>
+      <menuitem id="menu_alternative_working_days" name="Alternative Working Days" parent="sg_holiday_config.sg_hr_leaves_configuration" action="action_alternative_working_days"/>
+  </data>
+</odoo>

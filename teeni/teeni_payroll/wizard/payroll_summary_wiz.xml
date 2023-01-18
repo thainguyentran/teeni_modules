@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="payroll_summary_wiz_inherit" model="ir.ui.view">
+        <field name="name">payroll.summary.wiz.inherit</field>
+        <field name="model">payroll.summary.wizard</field>
+        <field name="inherit_id" ref="sg_hr_report.payroll_summary_wiz"/>
+        <field name="arch" type="xml">
+            <field name="employee_ids" position="before">
+                <group>
+                    <field name="mode"/>
+                    <field name="department_id" attrs="{'invisible': [('mode', '!=', 'department')]}" options="{'no_create':1,'no_create_edit':1,'no_open':1}"/>
+                    <field name="employee_id" attrs="{'invisible': [('mode', '!=', 'employee')]}" options="{'no_create':1,'no_create_edit':1,'no_open':1}"/>
+                </group>
+            </field>
+            <xpath expr="//field[@name='employee_ids']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

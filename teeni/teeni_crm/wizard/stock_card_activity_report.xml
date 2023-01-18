@@ -1,0 +1,151 @@
+<odoo>
+    <data>
+        <record id="view_stock_card_acty_report" model="ir.ui.view">
+            <field name="name">stock.card.acty.report.wiz.form</field>
+            <field name="model">stock.card.acty.report.wiz</field>
+            <field name="arch" type="xml">
+                <form string="Stock Card Activity Report" create="false" edit="false" save="false" discard="false">
+                    <group>
+                        <group>
+                            <field name="product_id" required="1" options="{'no_create':true, 'no_create_edit':true}"/>
+                            <field name="warehouse_id"/>
+                            <field name="from_date" required="1"/>
+                            <field name="to_date" required="1"/>
+                        </group>
+                        <group>
+
+                        </group>
+                    </group>
+                    <footer>
+                        <!--            <button name="run_process" string="Process" type="object" class="btn-primary" />-->
+                        <button name="print_report" string="Print" type="object" class="btn-primary" />
+                        <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+        <record id="stock_card_acty_paperformat_landscape" model="report.paperformat">
+            <field name="name">Stock Card Activity Report Format Landscape</field>
+            <field name="default" eval="True" />
+            <field name="format">A4</field>
+            <field name="page_height">0</field>
+            <field name="page_width">0</field>
+            <field name="orientation">Landscape</field>
+            <field name="margin_top">25</field>
+            <field name="margin_bottom">5</field>
+            <field name="margin_left">7</field>
+            <field name="margin_right">7</field>
+            <field name="header_line" eval="False" />
+            <field name="header_spacing">25</field>
+            <field name="dpi">90</field>
+        </record>
+
+        <report
+            string="Stock Card Activity Report"
+            id="action_stock_card_activity_report"
+            model="stock.card.acty.report.wiz"
+            report_type="qweb-pdf"
+            name="teeni_crm.stock_card_activity_report"
+            file="teeni_crm.stock_card_activity_report"
+            print_report_name="'Stock Card Activity Listing'"
+            paperformat="stock_card_acty_paperformat_landscape"
+        />
+
+        <template id="stock_card_activity_report">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-call="web.basic_layout">
+                        <table width="100%">
+                            <tr>
+                                <td style="text-align:left;">
+                                    <h3>TEENI ENTERPRISE PTE LTD-09</h3>
+                                    <h3><u>Stock Card Activity Listing</u></h3>
+                                    <!-- <div>Print Order: Supplier ID </div> -->
+                                </td>
+                            </tr>
+                            <tr>
+                                <td width="25%">From Stock Code: &amp;nbsp;&amp;nbsp; <span t-field="o.product_id.default_code"/></td>
+                                <td width="25%">To: &amp;nbsp;&amp;nbsp; <span t-field="o.product_id.default_code"/></td>
+                                <td width="25%">From W/H Code: </td>
+                                <td width="25%">To: </td>
+                            </tr>
+                            <tr>
+                                <td>From Stock Name: </td>
+                                <td>To: </td>
+                                <td>From W/H Name: </td>
+                                <td>To: </td>
+                            </tr>
+                            <tr>
+                                <td>From date: <span t-field="o.from_date"/></td>
+                                <td>To date: <span t-field="o.to_date"/></td>
+                            </tr>
+                        </table>
+                        <t t-set="record_sales" t-value="o.run_process()" />
+                        <table width="100%">
+                            <tr style="border-top:1px solid;">
+                                <td>Item</td>
+                                <td colspan="12">Stock Code &amp; Name </td>
+                            </tr>
+                            <tr style="border-bottom:1px solid;">
+                                <td style="text-align:left;">Date</td>
+                                <td style="text-align:left;">Type</td>
+                                <td style="text-align:left;">Ref. No</td>
+                                <td style="text-align:left;">Link DO Ref. No</td>
+                                <td style="text-align:left;">Particular</td>
+                                <td style="text-align:left;">Unit</td>
+                                <td style="text-align:left;">Curr</td>
+                                <td style="text-align:left;">Unit Cost</td>
+                                <td style="text-align:left;">Unit Price</td>
+                                <td style="text-align:left;">Discount</td>
+                                <td style="text-align:left;">Total</td>
+                                <td style="text-align:left;">Balance</td>
+                                <td style="text-align:left;">Ave. U/Cost</td>
+                            </tr>
+                            <t t-set="i" t-value="0" />
+                            <t t-foreach="record_sales" t-as="line">
+                                <t t-set="i" t-value="i+1" />
+                                <tr t-if="i==1">
+                                    <td style="font-weight:bold;"><span t-esc="i"/></td>
+                                    <td style="font-weight:bold;" colspan="2"><span t-field="line.stock_code"/> </td>
+                                    <td style="font-weight:bold;padding-left:100px;" colspan="6"><span t-field="line.name"/> </td>
+                                </tr>
+                                <tr>
+                                    <td style="padding-left:1px;"><span t-field="line.date" /></td>
+                                    <td style="text-align:left;"><span t-field="line.trans_type" /></td>
+                                    <td style="text-align:left;"><span t-field="line.ref_no" /></td>
+                                    <td style="text-align:left;"></td>
+                                    <td style="text-align:left;"><span t-field="line.customer" /></td>
+                                    <td style="text-align:right;"><span t-esc="'{:,.0f}'.format(line.unit)" /></td>
+                                    <td style="text-align:right;"><span t-field="line.currency" /></td>
+                                    <td style="text-align:right;"><span t-if="line.unit_cost!=0" t-field="line.unit_cost" /></td>
+                                    <td style="text-align:right;"><span t-field="line.unit_price" /></td>
+                                    <td style="text-align:right;"><span t-if="line.discount!=0" t-field="line.discount" /></td>
+                                    <td style="text-align:right;"><span t-field="line.total" /></td>
+                                    <td style="text-align:right;"><span t-esc="'{:,.0f}'.format(line.balances)" /></td>
+                                    <td style="text-align:right;"><span t-if="line.avg_u_cost!=0" t-field="line.avg_u_cost" /></td>
+                                </tr>
+                            </t>
+
+                            <tr>
+                                <br/>
+                                <br/>
+                                <td colspan="7" style="text-align:center">
+                                    <strong>---------END of REPORT---------</strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </t>
+                </t>
+            </t>
+        </template>
+        <record id="action_stock_card_acty_report" model="ir.actions.act_window">
+            <field name="name">Stock Card Activity Report</field>
+            <field name="res_model">stock.card.acty.report.wiz</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+            <field name="view_id" ref="view_stock_card_acty_report" />
+        </record>
+        <menuitem id="menu_item_stock_card_acty_report" name="Stock Card Activity Listing" parent="stock.menu_stock_inventory_control"  action="action_stock_card_acty_report"/>
+    </data>
+</odoo>

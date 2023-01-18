@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+	<data>
+		<record id="view_account_bank_journal_form_inherit" model="ir.ui.view">
+		    <field name="name">account.bank.journal.form.inherit</field>
+		    <field name="model">account.journal</field>
+		    <field name="inherit_id" ref="account.view_account_bank_journal_form"/>
+		    <field name="arch" type="xml">
+		    	<field name="currency_id" position="after">
+		    		<field name="fast_code"/>
+		    		<field name="department_code"/>
+		    	</field>
+		    </field>
+		</record>
+
+		<record id="view_account_form_inherit" model="ir.ui.view">
+		    <field name="name">account.form.inherit</field>
+		    <field name="model">account.account</field>
+		    <field name="inherit_id" ref="account.view_account_form"/>
+		    <field name="arch" type="xml">
+		    	<field name="code" position="before">
+		    		<field name="fast_code"/>
+		    		<field name="department_code"/>
+		    		<field name="parent_id" />
+		    	</field>
+		    </field>
+		</record>
+
+		<record id="view_account_search_inherit" model="ir.ui.view">
+            <field name="name">account.account.search.inherirt</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_search"/>
+            <field name="arch" type="xml">
+                <field name="name" position="before">
+                	<field name="fast_code"/>
+		    		<field name="department_code"/>
+		    		<field name="parent_id" />
+		    		<filter string="Fast Code" name="fast_code" domain="[]" context="{'group_by':'fast_code'}"/>
+                    <filter name="department_code" string="Department Code" domain="[]" context="{'group_by':'department_code'}"/>
+                    <filter name="parent_id" string="Parent Account" domain="[]" context="{'group_by':'parent_id'}"/>
+            	</field>
+            </field>
+        </record>
+
+        <record id="view_account_list_inherit" model="ir.ui.view">
+            <field name="name">account.account.list.inherit</field>
+            <field name="model">account.account</field>
+            <field name="inherit_id" ref="account.view_account_list"/>
+            <field name="arch" type="xml">
+            	<field name="code" position="before">
+                	<field name="fast_code"/>
+		    		<field name="department_code"/>
+		    		<field name="parent_id" />
+		    	</field>
+            </field>
+        </record>
+
+		<record id="view_department_code_form" model="ir.ui.view">
+		    <field name="name">department.code.form.view</field>
+		    <field name="model">department.code</field>
+		    <field name="arch" type="xml">
+	    		<form>
+	                <sheet>
+	                    <group>
+	                        <field name="code"/>
+	                        <field name="name"/>
+	                    </group>
+	                </sheet>
+            	</form>
+		    </field>
+		</record>
+
+		<record id="view_department_code_tree" model="ir.ui.view">
+            <field name="name">department.code.tree</field>
+            <field name="model">department.code</field>
+            <field name="priority">4</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="code"/>
+	    			<field name="name"/>
+                </tree>
+            </field>
+      </record>
+
+      <record id="department_code_search_view" model="ir.ui.view">
+            <field name="name">department.code.tree</field>
+            <field name="model">department.code</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="code"/>
+	    			<field name="name"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Code" name="code" domain="[]" context="{'group_by':'code'}"/>
+                        <filter name="name" string="Name" domain="[]" context="{'group_by':'name'}"/>
+                    </group>
+                </search>
+            </field>
+      </record>
+
+      <record model="ir.actions.act_window" id="action_department_code">
+        <field name="name">Department Code</field>
+        <field name="res_model">department.code</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+      </record>
+      <menuitem id="menu_action_department_code" action="action_department_code" name="Department Code" parent="account.account_account_menu" sequence="1"/>
+	</data>
+</openerp>

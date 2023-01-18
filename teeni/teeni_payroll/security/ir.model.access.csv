@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+hr_holidays.access_hr_holidays_manager_allocation,hr.holidays.manager.allocation,hr_holidays.model_hr_leave_allocation,hr.group_hr_manager,1,1,1,1
+hr_holidays.access_hr_holidays_user_allocation,hr.holidays.user.allocation,hr_holidays.model_hr_leave_allocation,hr_holidays.group_hr_holidays_user,1,0,0,0
+hr_holidays.access_hr_holidays_employee_allocation,hr.holidays.employee.allocation,hr_holidays.model_hr_leave_allocation,base.group_user,1,0,0,0
+access_hr_employee_system_user,hr.employee system user,model_hr_employee,base.group_user,0,0,0,0
+access_hr_contract_system_user,hr.contract system user,model_hr_contract,base.group_user,0,0,0,0
+access_alternative_working_days,teeni_payroll.alternative_working_days,teeni_payroll.model_alternative_working_days,base.group_user,1,1,1,1
+access_alternative_working_days_line,teeni_payroll.alternative_working_days_line,teeni_payroll.model_alternative_working_days_line,base.group_user,1,1,1,1

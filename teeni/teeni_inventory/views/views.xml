@@ -1,0 +1,225 @@
+<odoo>
+  <data>
+    <record id="low_stock_notification" model="ir.cron">
+        <field name="name">Low on Stock notification</field>
+        <field name="model_id" ref="model_stock_quant"/>
+        <field name="state">code</field>
+        <field name="code">model.low_stock_reminder()</field>
+        <field name="interval_number">7</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+    </record>
+    <record id="do_cancel_notification" model="ir.cron">
+        <field name="name">DO cancel notification</field>
+        <field name="model_id" ref="model_stock_picking"/>
+        <field name="state">code</field>
+        <field name="code">model.check_po_expire()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+    </record>
+    <record id="exp_code_form" model="ir.ui.view">
+        <field name="name">exp.code.form.view</field>
+        <field name="model">teeni.exp.code</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="exp_year"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="exp_code_tree_view" model="ir.ui.view">
+        <field name="name">exp.code.view.tree</field>
+        <field name="model">teeni.exp.code</field>
+        <field name="arch" type="xml">
+            <tree>
+                  <field name="name"/>
+                  <field name="exp_year"/>
+            </tree>
+        </field>
+     </record>
+
+    <record id="view_picking_form_inherit_inventory" model="ir.ui.view">
+        <field name="name">stock.picking.form</field>
+        <field name="model">stock.picking</field>
+        <field eval="12" name="priority"/>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='do_print_picking']" position="before">
+                <button name="packer_submit" string="Submit" type="object" class="oe_highlight" groups="teeni_inventory.group_packer_rights" attrs="{'invisible': ['|',('state', 'not in', ['assigned','rejected']), ('picking_type_name', '!=', 'Internal Transfers')]}"/>
+                <button name="manager_approve" string="Approve" type="object" class="oe_highlight" groups="teeni_inventory.group_operation_manager_rights" attrs="{'invisible': ['|',('state', '!=', 'submitted'),('picking_type_name', 'in', ['Pick','Receipts'])]}"/>
+                <button name="packer_confirm" string="Confirm Received" states="processed" type="object" class="oe_highlight" groups="teeni_inventory.group_packer_rights" attrs="{'invisible': ('picking_type_name','!=','Internal Transfers')}"/>
+                <button name="wha_verify" string="Verify" type="object" class="oe_highlight" groups="teeni_inventory.group_warehouse_assist_rights" attrs="{'invisible': ['|',('state', '!=', 'assigned'),('picking_type_name', '!=', 'Receipts')]}"/>
+                <button name="deliver_confirm" string="Complete Delivery" type="object" class="oe_highlight" groups="teeni_inventory.group_driver_rights" attrs="{'invisible':['|',('state','!=','done'),('picking_type_name','!=','Delivery Orders')]}"/>
+                <button name="action_reject" string="Reject" type="object" class="oe_highlight" attrs="{'invisible':['|',('state','!=','submitted'),('picking_type_name','!=','Internal Transfers')]}" groups="teeni_inventory.group_manager_rights,teeni_inventory.group_operation_manager_rights"/>
+                <button name="store_reject" string="Store Reject" groups="teeni_inventory.group_driver_rights" type="object" attrs="{'invisible':['|',('state','!=','done'),('picking_type_name','!=','Delivery Orders')]}"/>
+                <button name="fail_deliver" string="Fail To Deliver" groups="teeni_inventory.group_driver_rights" type="object" attrs="{'invisible':['|',('state','!=','done'),('picking_type_name','!=','Delivery Orders')]}"/>
+                <button name="driver_assign" string="Re-Assign Driver" groups="teeni_inventory.group_logistic_assist_rights" type="object" states="f_delivery"/>
+                <button name="%(act_teeni_stock_return_picking)d" string="Return" attrs="{'invisible':[('state', '!=', 's_rejected')]}" type="action" groups="teeni_inventory.group_logistic_assist_rights"/>
+            </xpath>
+            <xpath expr="//button[@name='%(stock.act_stock_return_picking)d']" position="replace">
+            </xpath>
+            <xpath expr="//button[@name='button_validate'][1]" position="replace">
+                <button name="button_validate" attrs="{'invisible': ['|','|',('state', '!=', 'assigned'), ('show_validate', '=', False), ('picking_type_name', '!=', 'Delivery Orders')]}" string="Verify" type="object" class="oe_highlight" groups="teeni_inventory.group_logistic_assist_rights" />
+            </xpath>
+            <xpath expr="//button[@name='button_validate'][2]" position="replace">
+                <button name="button_validate" attrs="{'invisible': ['|','|',('state', 'not in', ['approved','verified']), ('show_validate', '=', False), ('picking_type_name', 'not in', ['Internal Transfers','Receipts'])]}" string="Process" type="object" groups="teeni_inventory.group_warehouse_assist_rights" class="o_btn_validate" />
+            </xpath>
+            <xpath expr="//button[@name='button_validate'][2]" position="after">
+                <button name="button_validate" attrs="{'invisible': ['|','|',('state', '!=', 'assigned'), ('show_validate', '=', False), ('picking_type_name', '!=', 'Pick')]}" string="Submit" type="object" class="oe_highlight" groups="teeni_inventory.group_packer_rights,teeni_inventory.group_can_process_picking" />
+            </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="replace">
+                <button name="action_cancel" attrs="{'invisible': ['|', ('state', 'not in', ('assigned', 'confirmed', 'partially_available', 'draft', 'waiting','submitted')), ('is_locked', '=', False)]}" string="Cancel" groups="teeni_inventory.group_packer_rights,teeni_inventory.group_warehouse_assist_rights,teeni_inventory.group_operation_manager_rights" type="object"/>
+            </xpath>
+            <xpath expr="//field[@name='state']" position="replace">
+                <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,partially_available,assigned,submitted,approved,done" />
+            </xpath>
+            <field name="partner_id" position="after">
+                <field name="cus_po_num" attrs="{'invisible':[('picking_type_name','in',['Internal Transfers','Receipts'])]}"/>
+                <field name="store_code" attrs="{'invisible':[('picking_type_name','in',['Internal Transfers','Receipts'])]}"/>
+                <field name="store_name" attrs="{'invisible':[('picking_type_name','in',['Internal Transfers','Receipts'])]}"/>
+            </field>
+            <field name="origin" position="after">
+                <field name="assigned_driver_id" string="Assigned Driver" attrs="{'invisible':[('picking_type_name','!=','Delivery Orders')]}"/>
+                <field name="assigned_delivery_date" attrs="{'invisible':[('picking_type_name','!=','Delivery Orders')]}" string="Assigned Delivery Date"/>
+            </field>
+            <field name="date_done" position="replace">
+                <field name="date_done" string="Delivery Date" readonly='1' attrs="{'invisible':[('picking_type_name','!=','Pick')]}" widget="date"/>
+            </field>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='quantity_done']" position="replace">
+                <field name="quantity_done" digits="[9,0]" string="Done" attrs="{'readonly': [('is_quantity_done_editable', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='product_uom_qty']" position="replace">
+                <field name="product_uom_qty" digits="[9,0]" string="Initial Demand" attrs="{'column_invisible': ['&amp;',('parent.immediate_transfer', '=', True), ('parent.is_locked', '=', True)], 'readonly': [('is_initial_demand_editable', '=', False)]}"/>
+            </xpath>
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='reserved_availability']" position="replace">
+                <field name="reserved_availability" string="Reserved" digits="[9,0]" attrs="{'column_invisible': (['|','|', ('parent.state','=', 'done'), ('parent.picking_type_code', '=', 'incoming'),'&amp;',('parent.immediate_transfer', '=', True), ('parent.is_locked', '=', True)])}"/>
+            </xpath>
+
+            <xpath expr="//field[@name='move_ids_without_package']/tree/field[@name='quantity_done']" position="after">
+                <field name="available_qty" digits="[9,0]" attrs="{'column_invisible':[('parent.picking_type_name', 'in', ['Receipts','Delivery Orders'])]}" readonly='1' force_save='1'/>
+            </xpath>
+            <xpath expr="//field[@name='move_line_ids_without_package']/tree/field[@name='qty_done']" position="after">
+                <field name="ml_available_qty" attrs="{'column_invisible':[('parent.picking_type_name', 'in', ['Receipts','Delivery Orders'])]}"/>
+            </xpath>
+            <xpath expr="//field[@name='scheduled_date']" position="replace">
+                <field name="scheduled_date" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))], 'required': [('id', '!=', False)]}" widget="date"/>
+                <field name="teeni_delivery_date"/>
+            </xpath>
+            <xpath expr="//tree[1]/field[@name='qty_done']" position="after">
+                <field name="rec_lot_number" options="{'no_open':True,'no_create_edit':True}" domain="[('product_id', '=', product_id)]" attrs="{'column_invisible':[('parent.picking_type_name', '==', 'Receipts')]}" widget="many2many_tags"/>
+                <field name="teeni_remarks" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}" force_save='1'/>
+            </xpath>
+            <xpath expr="//tree/field[@name='product_uom']" position="after">
+                <field name="pack_size"/>
+                <field name="rec_lot_number" options="{'no_open':True,'no_create_edit':True}" domain="[('product_id', '=', product_id)]" attrs="{'column_invisible':[('parent.picking_type_name', '==', 'Receipts')]}" widget="many2many_tags"/>
+                <field name="teeni_remarks" attrs="{'readonly': [('state', 'in', ('done', 'cancel'))]}" force_save='1'/>
+            </xpath>
+
+            <xpath expr="//field[@name='move_type']" position="after">
+                <field name="picking_type_name" invisible='1' />
+                <field name="packer_sup_id" options="{'no_open':True}" />
+                <field name="packer_sup_date" />
+                <field name="manager_approved_id" options="{'no_open':True}" attrs="{'invisible':[('picking_type_name','!=','Internal Transfers')]}"/>
+                <field name="manager_approved_date" attrs="{'invisible':[('picking_type_name','!=','Internal Transfers')]}"/>
+                <field name="wh_process_id" options="{'no_open':True}" />
+                <field name="wh_process_date" />
+                <field name="packer_confirm_id" options="{'no_open':True}" attrs="{'invisible':[('picking_type_name','!=','Internal Transfers')]}"/>
+                <field name="packer_confirm_date" attrs="{'invisible':[('picking_type_name','!=','Internal Transfers')]}"/>
+                <field name="receipt_verified_id" options="{'no_open':True}" attrs="{'invisible':[('picking_type_name','!=','Receipts')]}"/>
+                <field name="receipt_verified_date" attrs="{'invisible':[('picking_type_name','!=','Receipts')]}"/>
+                <field name="deliver_confirm_date" attrs="{'invisible':[('picking_type_name','!=','Delivery Orders')]}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="vpicktree_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.tree.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.vpicktree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="default_order">date desc</attribute>
+            </xpath>
+            <xpath expr="//field[@name='name']" position="after">
+                <field name="cus_po_num"/>
+            </xpath>
+            <xpath expr="//field[@name='partner_id']" position="replace">
+                <field name="store_code"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_picking_internal_search_inherit" model="ir.ui.view">
+        <field name="name">stock.picking.internal.search.inherit</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_internal_search"/>
+        <field name="arch" type="xml">
+            <search>
+
+                <field name="cus_po_num"/>
+                <field name="store_code"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="stock.stock_picking_action_picking_type" model="ir.actions.act_window">
+        <field name="context">{
+                    'search_default_picking_type_id': [active_id],
+                    'default_picking_type_id': active_id,
+                    'contact_display': 'partner_address',
+                    'search_default_status': 1
+            }
+        </field>
+    </record>
+
+    <record id="removal_notification" model="ir.cron">
+        <field name="name">Removal of stock notification</field>
+        <field name="model_id" ref="model_stock_production_lot"/>
+        <field name="state">code</field>
+        <field name="code">model.removal_reminder()</field>
+        <field name="interval_number">1</field>
+        <field name="interval_type">days</field>
+        <field name="numbercall">-1</field>
+    </record>
+
+    <record id="view_move_form_expiry_inherit" model="ir.ui.view">
+        <field name="name">stock.production.lot.expiry.form.inherit</field>
+        <field name="model">stock.production.lot</field>
+        <field name="inherit_id" ref="product_expiry.view_move_form_expiry" />
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='use_date']" position="after">
+                <field name="exp_code"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_stock_move_line_operation_tree_inherit" model="ir.ui.view">
+        <field name="name">stock.move.line.operations.tree</field>
+        <field name="model">stock.move.line</field>
+        <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+        <field name="arch" type="xml">
+            <field name="lot_id" position="replace">
+                <field name="lot_id" attrs="{'readonly': ['&amp;', ('package_level_id', '!=', False), ('parent.picking_type_entire_packs', '=', True)]}"
+                       invisible="not context.get('show_lots_m2o')"
+                       domain="[('product_id', '=', parent.product_id),('product_qty', '&gt;', 0)]"
+                       groups="stock.group_production_lot"
+                       context="{'default_product_id': parent.product_id, 'active_picking_id': picking_id}"/>
+            </field>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_teeni_exp_code">
+        <field name="name">Exp Code List</field>
+        <field name="res_model">teeni.exp.code</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+     <menuitem id="menu_action_teeni_exp_code" name="Expiry Code List" parent="stock.menu_stock_inventory_control" action="action_teeni_exp_code"/>
+  </data>
+</odoo>

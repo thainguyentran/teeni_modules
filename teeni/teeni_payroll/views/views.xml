@@ -1,0 +1,150 @@
+<odoo>
+    <data>
+        <record id="hr_payroll.hr_rule_basic" model="hr.salary.rule">
+            <field name="amount_python_compute">
+result = 0.0
+if worked_days.TTLCURRWKDAYINMTH and worked_days.TTLCURRWKDAYINMTH.number_of_days and worked_days.TTLCURCONTDAY and worked_days.TTLCURCONTDAY.number_of_days:
+    #result = (contract.wage / worked_days.TTLCURRWKDAYINMTH.number_of_days) * worked_days.TTLCURCONTDAY.number_of_days
+    work_day = contract.count_days(payslip.date_from,payslip.date_to)
+    result = (contract.wage / worked_days.TTLCURRDAYINMTH.number_of_days) * work_day
+            </field>
+            <field name="category_id" ref="hr_payroll.BASIC"/>
+            <field name="quantity">1.0</field>
+        </record>
+
+        <record id="l10n_sg_hr_payroll.hr_salary_rule_overtime0" model="hr.salary.rule">
+            <field name="amount_python_compute">
+one_day = (contract.wage / worked_days.TTLCURRWKDAYINMTH.number_of_days)
+one_day_hour = (payslip.total_hours / worked_days.TTLCURRWKDAYINMTH.number_of_days)
+one_hour_salary = (one_day / one_day_hour)
+result = (one_hour_salary * payslip.overtime_hours * 1.5)</field>
+        </record>
+        <record id="l10n_sg_hr_payroll.hr_salary_rule_housingallowance0" model="hr.salary.rule">
+            <field name="amount_python_compute">
+result = 0.0
+if inputs.SC123I:
+    result = inputs.SC123I.amount</field>
+        </record>
+
+        <record id="hr_salary_rule_mobileallowance0" model="hr.salary.rule">
+            <field name="code">MPA</field>
+            <field eval="213" name="sequence"/>
+            <field eval="1" name="appears_on_payslip"/>
+            <field name="condition_range">contract.wage</field>
+            <field eval="1.0" name="amount_fix"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field eval="1" name="active"/>
+            <field name="name">Mobile Phone Allowance</field>
+            <field name="condition_python">
+                result = rules.NET &gt; categories.NET * 0.10</field>
+            <field name="amount_python_compute">
+result = 0.0
+if inputs.MPAI:
+    result = inputs.MPAI.amount</field>
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="quantity">1.0</field>
+        </record>
+        <record id="hr_rule_input_38" model="hr.rule.input">
+            <field name="name">Addtions - Mobile Phone Allowance</field>
+            <field name="code">MPAI</field>
+            <field name="input_id" ref="hr_salary_rule_mobileallowance0" />
+        </record>
+        <record id="hr_salary_rule_travelallowance0" model="hr.salary.rule">
+            <field name="code">TRA</field>
+            <field eval="213" name="sequence"/>
+            <field eval="1" name="appears_on_payslip"/>
+            <field name="condition_range">contract.wage</field>
+            <field eval="1.0" name="amount_fix"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field eval="1" name="active"/>
+            <field name="name">Travel Allowance</field>
+            <field name="condition_python">
+                result = rules.NET &gt; categories.NET * 0.10</field>
+            <field name="amount_python_compute">
+result = 0.0
+if inputs.TRAI:
+    result = inputs.TRAI.amount</field>
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="quantity">1.0</field>
+        </record>
+
+
+        <record id="hr_rule_input_39" model="hr.rule.input">
+            <field name="name">Addtions - Travel Allowance</field>
+            <field name="code">TRAI</field>
+            <field name="input_id" ref="hr_salary_rule_travelallowance0" />
+        </record>
+        <record id="hr_salary_rule_unusedleave0" model="hr.salary.rule">
+            <field name="code">UUL</field>
+            <field eval="213" name="sequence"/>
+            <field eval="1" name="appears_on_payslip"/>
+            <field name="condition_range">contract.wage</field>
+            <field eval="1.0" name="amount_fix"/>
+            <field name="company_id" ref="base.main_company"/>
+            <field name="condition_select">none</field>
+            <field name="amount_select">code</field>
+            <field eval="1" name="active"/>
+            <field name="name">Unused Leave</field>
+            <field name="condition_python">
+                result = rules.NET &gt; categories.NET * 0.10</field>
+            <field name="amount_python_compute">
+result = 0.0
+result = (contract.wage / worked_days.TTLCURRDAYINMTH.number_of_days)*contract.unused_leave(payslip.date_from,payslip.date_to)</field>
+            <field name="category_id" ref="hr_payroll.ALW"/>
+            <field name="quantity">1.0</field>
+        </record>
+
+        <record id="view_hr_payslip_form_inherit" model="ir.ui.view">
+            <field name="name">hr.payslip.inherit</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='action_payslip_done']"
+                    position="attributes">
+                    <attribute name="groups">teeni_inventory.group_operation_manager_rights</attribute>
+                </xpath>
+                <xpath expr="//field[@name='state']" position="before">
+                    <button name="send_email_with_attachment" string="Email payslip to employee" states="done" type="object" class="oe_highlight" groups="teeni_inventory.group_accountant_rights,teeni_inventory.group_manager_rights,teeni_inventory.group_operation_manager_rights"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_hr_payslip_run_form_inherit" model="ir.ui.view">
+            <field name="name">hr.payslip.run.inherit</field>
+            <field name="model">hr.payslip.run</field>
+            <field name="inherit_id" ref="hr_payroll.hr_payslip_run_form" />
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='close_payslip_run']" position="attributes">
+                    <attribute name="groups">teeni_inventory.group_operation_manager_rights</attribute>
+                </xpath>
+                <xpath expr="//button[@name='draft_payslip_run']" position="attributes">
+                    <attribute name="groups">teeni_inventory.group_operation_manager_rights</attribute>
+                </xpath>
+                <xpath expr="//field[@name='credit_note']" position="after">
+                    <field name="payroll_type"/>
+                    <field name="dept_id" attrs="{'invisible':[('payroll_type','!=','dep_wise')]}" options="{'no_create':'true','no_create_edit':'true','no_open':'true'}"/>
+                    <field name="payment_mode" attrs="{'invisible':[('payroll_type','!=','payment_type')]}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_hr_payslip_emp_form_inherit" model="ir.ui.view">
+            <field name="name">hr.payslip.inherit</field>
+            <field name="model">hr.payslip.employees</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_by_employees" />
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='employee_ids']" position="before">
+                    <group>
+                        <field name="dept_id" invisible="1"/>
+                        <field name="payroll_type" invisible="1"/>
+                        <field name="payment_mode" invisible="1"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

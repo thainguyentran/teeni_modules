@@ -1,0 +1,115 @@
+<odoo>
+  <data>
+    <record id="view_teeni_picking_summary_wiz" model="ir.ui.view">
+      <field name="name">teeni.picking.summary.wiz.form.view</field>
+      <field name="model">teeni.picking.summary.wiz</field>
+      <field name="arch" type="xml">
+        <form string="Picking Summary" create="false" edit="false" save="false" discard="false">
+          <header>
+            <button name="run_process" string="Create Summary" type="object" class="btn-primary" />
+            <button name="print_report" string="Print" type="object" class="btn-primary" />
+<!--            <button name="export_to_excel" string="Export to Excel" type="object" class="btn-primary" />-->
+          </header>
+          <group>
+            <group>
+                <field name="picking_id" domain="[('picking_type_id.code','=', 'outgoing')]" options="{'no_create':true, 'no_create_edit':true}" widget="many2many_tags"/>
+                <field name="location_id" domain="[('usage','!=', 'view')]" options="{'no_create':true, 'no_create_edit':true}"/>
+                <field name="po_id" domain="[('state','=', 'sale')]" options="{'no_create':true, 'no_create_edit':true}"/>
+            </group>
+            <group>
+
+            </group>
+              <notebook>
+                    <page string="Product List">
+                        <field name="rec_lines" readonly="1">
+                            <tree>
+                                <field name="picking_id"/>
+                                <field name="product_id"/>
+                                <field name="quantity"/>
+                                <field name="product_uom_id"/>
+                                <field name="lot_id"/>
+                                <field name="location_id"/>
+                                <field name="order_id"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+          </group>
+        </form>
+      </field>
+    </record>
+
+
+    <report
+      string="Picking Summary"
+      id="action_picking_summary_pdf"
+      model="teeni.picking.summary.wiz"
+      report_type="qweb-pdf"
+      name="teeni_inventory.picking_summary_pdf"
+      file="teeni_inventory.picking_summary_pdf"
+      print_report_name="'Picking Summary'"
+      paperformat="teeni_crm.sales_report_paperformat_portrait"
+    />
+
+
+      <template id="picking_summary_pdf">
+          <t t-call="web.html_container">
+              <t t-foreach="docs" t-as="o">
+                  <t t-call="web.basic_layout">
+                      <table width="100%">
+                          <tr>
+                              <td style="text-align:center;">
+                                  <h3>Picking Summary</h3>
+                                  <br/>
+                                  Date : <span t-field="o.create_date"></span>
+                                  <br/>
+                              </td>
+                          </tr>
+                      </table>
+                      <t t-set="record_collection" t-value="o.run_process()" />
+                      <table width="100%">
+                          <tr>
+                              <th style="border:1px solid;text-align:center;"><strong>NO</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Picking No</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Product</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Quantity</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>UOM</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Lot Number</strong></th>
+                              <th style="border:1px solid;text-align:center;"><strong>Order No</strong></th>
+                          </tr>
+                          <t t-set="i" t-value="0" />
+                          <t t-set="curr_loc" t-value=""/>
+                          <t t-foreach="record_collection" t-as="line">
+                            <tr t-if="curr_loc!=line.location_id.id"  style="border:1px solid;background-color:gray;font-weight:bold">
+                                <td colspan="7" style="padding-left:50px;">
+                                    <span t-field="line.location_id.location_id.name"/> / <span t-field="line.location_id.name"/>                                </td>
+                            </tr>
+                            <tr>
+                              <t t-set="i" t-value="i+1" />
+                              <t t-set="curr_loc" t-value="line.location_id.id"/>
+                              <td style="border:1px solid;text-align:center;"><span t-esc="i" /></td>
+                              <td style="border:1px solid;padding-left:1px;"><span t-field="line.picking_id.name" /></td>
+                              <td style="border:1px solid;padding-left:1px;"><span t-field="line.product_id.name" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.quantity" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.product_uom_id.name" /></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.lot_id.name"/></td>
+                              <td style="border:1px solid;text-align:center;"><span t-field="line.order_id.name"/></td>
+                            </tr>
+                          </t>
+                      </table>
+                  </t>
+              </t>
+          </t>
+        </template>
+
+        <record id="action_picking_summary_report" model="ir.actions.act_window">
+            <field name="name">Picking Summary</field>
+            <field name="res_model">teeni.picking.summary.wiz</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="view_id" ref="view_teeni_picking_summary_wiz" />
+        </record>
+        <menuitem id="menu_picking_profit_report" name="Picking Summary" parent="stock.menu_stock_warehouse_mgmt"  action="action_picking_summary_report"/>
+    </data>
+</odoo>
