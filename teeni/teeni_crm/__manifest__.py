@@ -6,10 +6,10 @@
         Teeni's customization for Sale, Purchase, Account and Stock module""",
 
     'description': """
-        Long description of module's purpose
+        Teeni's customization for Sale, Purchase, Account and Stock module
     """,
 
-    'author': "My Company",
+    'author': "TSW Technologies",
     'website': "http://www.yourcompany.com",
 
     # Categories can be used to filter modules in modules listing

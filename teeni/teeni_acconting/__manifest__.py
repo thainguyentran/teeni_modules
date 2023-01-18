@@ -3,14 +3,13 @@
     'name': "teeni_acconting",
 
     'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+        Customized module for accounting based on Teeni's request""",
 
     'description': """
-        Long description of module's purpose
+        Customized module for accounting based on Teeni's request
     """,
 
-    'author': "My Company",
+    'author': "TSW Technologies",
     'website': "http://www.yourcompany.com",
 
     # Categories can be used to filter modules in modules listing

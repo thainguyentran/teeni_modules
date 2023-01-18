@@ -3,14 +3,13 @@
     'name': "teeni_inventory",
 
     'summary': """
-        Short (1 phrase/line) summary of the module's purpose, used as
-        subtitle on modules listing or apps.openerp.com""",
+        Customized Module for inventoy functions based on Teeni's requests""",
 
     'description': """
-        Long description of module's purpose
+        Customized Module for inventoy functions based on Teeni's requests
     """,
 
-    'author': "My Company",
+    'author': "TSW Technologies",
     'website': "http://www.yourcompany.com",
 
     # Categories can be used to filter modules in modules listing
